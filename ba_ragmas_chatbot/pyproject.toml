@@ -1,0 +1,23 @@
+[project]
+name = "ba_ragmas_chatbot"
+version = "0.1.0"
+description = "BA_RAGMAS_chatbot using crewAI"
+authors = [{ name = "Your Name", email = "you@example.com" }]
+requires-python = ">=3.10,<=3.13"
+dependencies = [
+    "crewai[tools]>=0.86.0,<1.0.0",
+    "langchain-ollama>=0.2.1",
+    "ollama>=0.4.4",
+    "python-telegram-bot>=21.9",
+]
+
+[project.scripts]
+ba_ragmas_chatbot = "ba_ragmas_chatbot.main:run"
+run_crew = "ba_ragmas_chatbot.main:run"
+train = "ba_ragmas_chatbot.main:train"
+replay = "ba_ragmas_chatbot.main:replay"
+test = "ba_ragmas_chatbot.main:test"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
