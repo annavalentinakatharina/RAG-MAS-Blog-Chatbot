@@ -18,15 +18,20 @@ class TelegramBot:
         self.bot = BaRagmasChatbot()
         user = update.effective_user
         await update.message.reply_html(
-            rf"Hi {user.mention_html()}! This is a chatbot for creating blog articles using RAG and MAS systems! First, what topic should the blog article be about? Or what task should the blog article fulfill? If you have a topic please respond with 'topic', if you have a separate task please respond with 'task'.",
+            rf"Hi {user.mention_html()}! This is a chatbot for creating blog articles using RAG and MAS systems! First, what topic should the blog article be about? Or what task should the blog article fulfil? If you have a topic please respond with 'topic', if you have a separate task please respond with 'task'.",
         )
         return self.TOPIC_OR_TASK
 
     async def topic_or_task(self, update: Update, context: CallbackContext):
         if update.message.text == "topic":
+            await update.message.reply_text("Okay, topic it is! What topic should the blog article be about?")
             return self.TOPIC
         if update.message.text == "task":
+            await update.message.reply_text("Okay, task it is! What task should the blog article fulfil?")
             return self.TASK
+        else:
+            await update.message.reply_text("Not valid, please respond with either 'topic' or 'task'.")
+            return self.TOPIC_OR_TASK
 
     async def topic(self, update: Update, context: CallbackContext):
         context.user_data['topic'] = update.message.text
@@ -66,55 +71,39 @@ class TelegramBot:
             file_id = document.file_id
             file = await context.bot.get_file(file_id)
             await file.download_to_drive(file_path)
-        await update.message.reply_text(
-            "How long should the blog article be? (e.g. Short, Medium, Long)"),
-        reply_markup = ReplyKeyboardMarkup(
-            [["Short", "Medium", "Long"]], one_time_keyboard=True
-        ),
+        await update.message.reply_text("How long should the blog article be? (e.g. Short, Medium, Long)"),
         return self.LENGTH
 
     async def no_document(self, update: Update, context: CallbackContext):
+        if update.message.text != "no":
+            await update.message.reply_text("Not valid, please respond with either a document or 'no'.")
+            return self.DOCUMENT
         await update.message.reply_text(
             "How long should the blog article be? (e.g. Short, Medium, Long)"),
-        reply_markup = ReplyKeyboardMarkup(
-            [["Short", "Medium", "Long"]], one_time_keyboard=True
-        ),
         return self.LENGTH
 
     async def length(self, update: Update, context: CallbackContext):
         context.user_data['length'] = update.message.text
         await update.message.reply_text(
             "Great! What language level should it be? (e.g. Beginner, Intermediate, Advanced)")
-        reply_markup = ReplyKeyboardMarkup(
-            [["Beginner", "Intermediate", "Advanced"]], one_time_keyboard=True
-        ),
         return self.LANGUAGE_LEVEL
 
     async def language_level(self, update: Update, context: CallbackContext):
         context.user_data['language_level'] = update.message.text
         await update.message.reply_text(
             "Great! What information level should it be? (e.g. High, Intermediate, Low)")
-        reply_markup = ReplyKeyboardMarkup(
-            [["High", "Intermediate", "Low"]], one_time_keyboard=True
-        ),
         return self.INFORMATION
 
     async def information(self, update: Update, context: CallbackContext):
         context.user_data['information'] = update.message.text
         await update.message.reply_text(
             "Great! What language should it be? (e.g. English, German, Spanish)")
-        reply_markup = ReplyKeyboardMarkup(
-            [["German", "English", "Spanish"]], one_time_keyboard=True
-        ),
         return self.LANGUAGE
 
     async def language(self, update: Update, context: CallbackContext):
         context.user_data['language'] = update.message.text
         await update.message.reply_text(
             "Great! What tone should it be? (e.g. Professional, Casual, Friendly)")
-        reply_markup = ReplyKeyboardMarkup(
-            [["Professional", "Casual", "Friendly"]], one_time_keyboard=True
-        ),
         return self.TONE
 
     async def tone(self, update: Update, context: CallbackContext):
@@ -145,7 +134,7 @@ class TelegramBot:
                 'tone': user_data['tone'],
                 'language': user_data['language'],
             }
-            response = self.bot.crew().kickoff(inputs=inputs)
+            response = str(self.bot.crew().kickoff(inputs=inputs))
             response = await update.message.reply_text(response)
             return ConversationHandler.END
         else:
