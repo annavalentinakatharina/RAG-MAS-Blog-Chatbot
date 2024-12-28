@@ -1,6 +1,6 @@
 research_task:
   description: >
-    Conduct a thorough research about {topic}, using only the resources given to you via the tools.
+    Conduct a thorough research about {topic}, using mainly the resources given to you via the tools, only reverting to other sources if completely necessary.
     Make sure you find any interesting and relevant information given
     the current year is 2024.
   expected_output: >
@@ -50,6 +50,7 @@ factchecker_task:
   description: >
     Fact-heck the facts mentioned in a blog article about a {topic}. 
     Make sure to cover all pieces of information in the given article, and make sure that everything in it is true.
+    Return the article that includes only fact-checked data.
     Length of Article: {length}
     Amount of information: {information_level}
     Level of language: {language_level}

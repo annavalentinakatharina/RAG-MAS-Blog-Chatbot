@@ -215,6 +215,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "crewai", extra = ["tools"] },
+    { name = "langchain" },
     { name = "langchain-ollama" },
     { name = "ollama" },
     { name = "python-telegram-bot" },
@@ -223,6 +224,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "crewai", extras = ["tools"], specifier = ">=0.86.0,<1.0.0" },
+    { name = "langchain", specifier = ">=0.3.11" },
     { name = "langchain-ollama", specifier = ">=0.2.1" },
     { name = "ollama", specifier = ">=0.4.4" },
     { name = "python-telegram-bot", specifier = ">=21.9" },

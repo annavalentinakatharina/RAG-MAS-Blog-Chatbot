@@ -3,27 +3,34 @@ import os
 from crewai_tools.tools import DOCXSearchTool, PDFSearchTool, TXTSearchTool, WebsiteSearchTool
 from telegram import ForceReply, Update, ReplyKeyboardMarkup
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters, CallbackContext, ConversationHandler
-
+from langchain_ollama import OllamaLLM
 from src.ba_ragmas_chatbot.crew import BaRagmasChatbot
 
 
 class TelegramBot:
-    TOPIC, TASK, TOPIC_OR_TASK, WEBSITE, DOCUMENT, LENGTH, LANGUAGE_LEVEL, INFORMATION, LANGUAGE, TONE, CONFIRM = range(11)
+    CHAT, TOPIC, TASK, TOPIC_OR_TASK, WEBSITE, DOCUMENT, LENGTH, LANGUAGE_LEVEL, INFORMATION, LANGUAGE, TONE, CONFIRM = range(12)
     VALID_MIME_TYPES = [
         "application/pdf",
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         "text/plain",
     ]
     tools = []
-    #ai =
+    ai = OllamaLLM(model="llama3.1:8b-instruct-q8_0")
+
+    async def chat(self, update: Update, context: CallbackContext):
+        if update.message.text == "start configuration":
+            await update.message.reply_text("Great, you want to start the blog article configuration! First, what topic should the blog article be about? Or what task should the blog article fulfil? If you have a topic please respond with 'topic', if you have a separate task please respond with 'task'.")
+            return self.TOPIC_OR_TASK
+        response = str(self.ai.invoke(update.message.text))
+        await update.message.reply_html(response)
+        return self.CHAT
 
     async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Send a message when the command /start is issued."""
         user = update.effective_user
         await update.message.reply_html(
-            rf"Hi {user.mention_html()}! This is a chatbot for creating blog articles using RAG and MAS systems! First, what topic should the blog article be about? Or what task should the blog article fulfil? If you have a topic please respond with 'topic', if you have a separate task please respond with 'task'.",
-        )
-        return self.TOPIC_OR_TASK
+            rf"Hi {user.mention_html()}! This is a chatbot for creating blog articles using RAG and MAS systems! You have two ways of using this chatbot: Either by chatting with a LLM model, or by using the configuring your blog article and generating it using RAG and MAS. When you are ready to start configuration, type in 'start configuration'. ")
+        return self.CHAT
 
     async def topic_or_task(self, update: Update, context: CallbackContext):
         if update.message.text == "topic":
@@ -161,6 +168,7 @@ class TelegramBot:
         conv_handler = ConversationHandler(
             entry_points=[CommandHandler("start", self.start)],
             states={
+                self.CHAT: [MessageHandler(filters.TEXT & ~filters.COMMAND, self.chat)],
                 self.TOPIC_OR_TASK: [MessageHandler(filters.TEXT & ~filters.COMMAND, self.topic_or_task)],
                 self.TOPIC: [MessageHandler(filters.TEXT & ~filters.COMMAND, self.topic)],
                 self.TASK: [MessageHandler(filters.TEXT & ~filters.COMMAND, self.task)],
