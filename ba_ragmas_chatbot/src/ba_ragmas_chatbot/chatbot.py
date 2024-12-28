@@ -1,3 +1,6 @@
+import os
+
+from crewai_tools.tools import DOCXSearchTool, PDFSearchTool, TXTSearchTool, WebsiteSearchTool
 from telegram import ForceReply, Update, ReplyKeyboardMarkup
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters, CallbackContext, ConversationHandler
 
@@ -11,11 +14,11 @@ class TelegramBot:
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         "text/plain",
     ]
-    bot = BaRagmasChatbot()
+    tools = []
+    #ai =
 
     async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Send a message when the command /start is issued."""
-        self.bot = BaRagmasChatbot()
         user = update.effective_user
         await update.message.reply_html(
             rf"Hi {user.mention_html()}! This is a chatbot for creating blog articles using RAG and MAS systems! First, what topic should the blog article be about? Or what task should the blog article fulfil? If you have a topic please respond with 'topic', if you have a separate task please respond with 'task'.",
@@ -44,8 +47,8 @@ class TelegramBot:
         return self.WEBSITE
 
     async def website(self, update: Update, context: CallbackContext):
-        if update.message.text != "no":
-            self.bot.addWebsite(update.message.text)
+        if update.message.text != "no" and update.message.text != "No":
+            self.tools.append(self.addWebsite(update.message.text))
         await update.message.reply_text(
             "Great! Do you have a document with information you want to have included? If yes, please reply with the document, if not, please just send 'no'."),
         return self.DOCUMENT
@@ -54,23 +57,23 @@ class TelegramBot:
         document = update.message.document
         file_path = ""
         if document:
-            file_path = f"./documents/{document.file_name}"
-            match document.mime_type:
-                case "application/pdf":
-                    self.bot.addPDF(file_path)
-                case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-                    self.bot.addDOCX(file_path)
-                case "text/plain":
-                    self.bot.addTxt(file_path)
-                case _:
+            if document.mime_type not in self.VALID_MIME_TYPES:
                     await update.message.reply_text(
                         f"Unsupported file type: {document.mime_type}. Please upload a valid document (PDF, Word, TXT)."
                     )
                     return
-
+            base_dir = os.path.dirname(__file__)
+            file_path = os.path.join(base_dir, "documents", document.file_name)
             file_id = document.file_id
             file = await context.bot.get_file(file_id)
             await file.download_to_drive(file_path)
+            match document.mime_type:
+                case "application/pdf":
+                    self.addPDF(file_path)
+                case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+                    self.addDOCX(file_path)
+                case "text/plain":
+                    self.addTxt(file_path)
         await update.message.reply_text("How long should the blog article be? (e.g. Short, Medium, Long)"),
         return self.LENGTH
 
@@ -134,7 +137,9 @@ class TelegramBot:
                 'tone': user_data['tone'],
                 'language': user_data['language'],
             }
-            response = str(self.bot.crew().kickoff(inputs=inputs))
+            filtered_tools = [tool for tool in self.tools if tool is not None]
+            bot = BaRagmasChatbot(filtered_tools)
+            response = str(bot.crew().kickoff(inputs=inputs))
             response = await update.message.reply_text(response)
             return ConversationHandler.END
         else:
@@ -178,4 +183,104 @@ class TelegramBot:
         application.add_handler(conv_handler)
         application.run_polling()
 
+    def addWebsite(self, url):
+        self.tools.append(
+            WebsiteSearchTool(
+                website=url,
+                config=dict(
+                    llm=dict(
+                        provider="ollama",  # or google, openai, anthropic, llama2, ...
+                        config=dict(
+                            model="llama3.1:8b-instruct-q8_0",
+                            base_url="http://localhost:11434",
+                            # temperature=0.5,
+                            # top_p=1,
+                            # stream=true,
+                        ),
+                    ),
+                    embedder=dict(
+                        provider="ollama",  # or openai, ollama, ...
+                        config=dict(
+                            model="mxbai-embed-large",
+                            base_url="http://localhost:11434",
+                            # task_type="retrieval_document",
+                            # title="Embeddings",
+                        ),
+                    ),
+                ),
+            )
+        )
 
+    def addPDF(self, location):
+        self.tools.append(
+            PDFSearchTool(
+                pdf=location,
+                config=dict(
+                    llm=dict(
+                        provider="ollama",  # or google, openai, anthropic, llama2, ...
+                        config=dict(
+                            model="llama3.1:8b-instruct-q8_0",
+                            base_url="http://localhost:11434",
+                            # temperature=0.5,
+                            # top_p=1,
+                            # stream=true,
+                        ),
+                    ),
+                    embedder=dict(
+                        provider="ollama",  # or openai, ollama, ...
+                        config=dict(
+                            model="mxbai-embed-large",
+                            base_url="http://localhost:11434",
+                            # task_type="retrieval_document",
+                            # title="Embeddings",
+                        ),
+                    ),
+                )
+            )
+        )
+
+    def addDOCX(self, location):
+        self.tools.append(
+            DOCXSearchTool(
+                docx=location,
+                config=dict(
+                    llm=dict(
+                        provider="ollama",
+                        config=dict(
+                            model="llama3.1:8b-instruct-q8_0",
+                            base_url="http://localhost:11434",
+                        ),
+                    ),
+                    embedder=dict(
+                        provider="ollama",
+                        config=dict(
+                            model="mxbai-embed-large",
+                            base_url="http://localhost:11434",
+                        ),
+                    ),
+                )
+            )
+        )
+
+    def addTxt(self, location):
+        self.tools.append(
+            TXTSearchTool(
+                txt=location,
+                config=dict(
+                    llm=dict(
+                        provider="ollama",
+                        config=dict(
+                            model="llama3.1:8b-instruct-q8_0",
+                            base_url="http://localhost:11434",
+                        ),
+                    ),
+                    embedder=dict(
+                        provider="ollama",
+                        config=dict(
+                            model="mxbai-embed-large",
+                            base_url="http://localhost:11434",
+                        ),
+                    ),
+                )
+            )
+        )

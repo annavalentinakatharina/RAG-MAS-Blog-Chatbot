@@ -10,6 +10,10 @@ from crewai_tools import WebsiteSearchTool, PDFSearchTool, DOCXSearchTool, TXTSe
 class BaRagmasChatbot():
 	"""BaRagmasChatbot crew"""
 
+	def __init__(self, tools):
+		print("Intializing BaRagmasChatbot")
+		self.tools = tools
+
 	# Learn more about YAML configuration files here:
 	# Agents: https://docs.crewai.com/concepts/agents#yaml-configuration-recommended
 	# Tasks: https://docs.crewai.com/concepts/tasks#yaml-configuration-recommended
@@ -31,6 +35,7 @@ class BaRagmasChatbot():
 	# https://docs.crewai.com/concepts/agents#agent-tools
 	@agent
 	def researcher(self) -> Agent:
+		print("Researcher made")
 		return Agent(
 			config=self.agents_config['researcher'],
 			llm=LLM(model="ollama/llama3.1:8b-instruct-q8_0", base_url="http://localhost:11434"),
@@ -43,6 +48,7 @@ class BaRagmasChatbot():
 		return Agent(
 			config=self.agents_config['editor'],
 			llm=LLM(model="ollama/llama3.1:8b-instruct-q8_0", base_url="http://localhost:11434"),
+			#tools=self.tools,
 			verbose=True
 		)
 
@@ -51,6 +57,7 @@ class BaRagmasChatbot():
 		return Agent(
 			config=self.agents_config['writer'],
 			llm=LLM(model="ollama/llama3.1:8b-instruct-q8_0", base_url="http://localhost:11434"),
+			#tools=self.tools,
 			verbose=True
 		)
 
@@ -67,6 +74,7 @@ class BaRagmasChatbot():
 		return Agent(
 			config=self.agents_config['factchecker'],
 			llm=LLM(model="ollama/llama3.1:8b-instruct-q8_0", base_url="http://localhost:11434"),
+			#tools=self.tools,
 			verbose=True
 		)
 
