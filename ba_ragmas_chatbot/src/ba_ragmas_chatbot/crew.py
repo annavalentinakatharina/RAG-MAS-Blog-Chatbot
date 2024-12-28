@@ -61,22 +61,22 @@ class BaRagmasChatbot():
 			verbose=True
 		)
 
-	# @agent
-	# def proofreader(self) -> Agent:
-	# 	return Agent(
-	# 		config=self.agents_config['proofreader'],
-	# 		llm=LLM(model="ollama/llama3.1:8b-instruct-q8_0", base_url="http://localhost:11434"),
-	# 		verbose=True
-	# 	)
-
 	@agent
-	def factchecker(self) -> Agent:
+	def proofreader(self) -> Agent:
 		return Agent(
-			config=self.agents_config['factchecker'],
+			config=self.agents_config['proofreader'],
 			llm=LLM(model="ollama/llama3.1:8b-instruct-q8_0", base_url="http://localhost:11434"),
-			#tools=self.tools,
 			verbose=True
 		)
+
+	# @agent
+	# def factchecker(self) -> Agent:
+	# 	return Agent(
+	# 		config=self.agents_config['factchecker'],
+	# 		llm=LLM(model="ollama/llama3.1:8b-instruct-q8_0", base_url="http://localhost:11434"),
+	# 		#tools=self.tools,
+	# 		verbose=True
+	# 	)
 
 	# To learn more about structured task outputs, 
 	# task dependencies, and task callbacks, check out the documentation:
@@ -99,17 +99,17 @@ class BaRagmasChatbot():
 			config=self.tasks_config['writer_task'],
 		)
 
-	# @task
-	# def proofreader_task(self) -> Task:
-	# 	return Task(
-	# 		config=self.tasks_config['proofreader_task'],
-	# 	)
-
 	@task
-	def factchecker_task(self) -> Task:
+	def proofreader_task(self) -> Task:
 		return Task(
-			config=self.tasks_config['factchecker_task'],
+			config=self.tasks_config['proofreader_task'],
 		)
+
+	# @task
+	# def factchecker_task(self) -> Task:
+	# 	return Task(
+	# 		config=self.tasks_config['factchecker_task'],
+	# 	)
 
 	@crew
 	def crew(self) -> Crew:
@@ -124,107 +124,3 @@ class BaRagmasChatbot():
 			verbose=True,
 			# process=Process.hierarchical, # In case you wanna use that instead https://docs.crewai.com/how-to/Hierarchical/
 		)
-
-	def addWebsite(self, url):
-		self.tools.append(
-			WebsiteSearchTool(
-				website = url,
-				config=dict(
-					llm=dict(
-						provider="ollama", # or google, openai, anthropic, llama2, ...
-						config=dict(
-							model="llama3.1:8b-instruct-q8_0",
-							base_url="http://localhost:11434",
-							# temperature=0.5,
-							# top_p=1,
-							# stream=true,
-						),
-					),
-					embedder=dict(
-						provider="ollama",  # or openai, ollama, ...
-						config=dict(
-							model="mxbai-embed-large",
-							base_url="http://localhost:11434",
-							# task_type="retrieval_document",
-							# title="Embeddings",
-						),
-					),
-				),
-			)
-		)
-
-	def addPDF(self, location):
-		self.tools.append(
-			PDFSearchTool(
-				pdf = location,
-				config=dict(
-					llm=dict(
-						provider="ollama",  # or google, openai, anthropic, llama2, ...
-						config=dict(
-							model="llama3.1:8b-instruct-q8_0",
-							base_url="http://localhost:11434",
-							# temperature=0.5,
-							# top_p=1,
-							# stream=true,
-						),
-					),
-					embedder=dict(
-						provider="ollama",  # or openai, ollama, ...
-						config=dict(
-							model="mxbai-embed-large",
-							base_url="http://localhost:11434",
-							# task_type="retrieval_document",
-							# title="Embeddings",
-						),
-					),
-				)
-			)
-		)
-
-	def addDOCX(self, location):
-		self.tools.append(
-			DOCXSearchTool(
-				docx = location,
-				config=dict(
-					llm=dict(
-						provider="ollama",
-						config=dict(
-							model="llama3.1:8b-instruct-q8_0",
-							base_url="http://localhost:11434",
-						),
-					),
-					embedder=dict(
-						provider="ollama",
-						config=dict(
-							model="mxbai-embed-large",
-							base_url="http://localhost:11434",
-						),
-					),
-				)
-			)
-		)
-
-	def addTxt(self, location):
-		self.tools.append(
-				TXTSearchTool(
-				txt = location,
-				config=dict(
-					llm=dict(
-						provider="ollama",
-						config=dict(
-							model="llama3.1:8b-instruct-q8_0",
-							base_url="http://localhost:11434",
-						),
-					),
-					embedder=dict(
-						provider="ollama",
-						config=dict(
-							model="mxbai-embed-large",
-							base_url="http://localhost:11434",
-						),
-					),
-				)
-			)
-		)
-
-

@@ -148,7 +148,7 @@ class TelegramBot:
             bot = BaRagmasChatbot(filtered_tools)
             response = str(bot.crew().kickoff(inputs=inputs))
             response = await update.message.reply_text(response)
-            return ConversationHandler.END
+            return self.CHAT
         else:
             await update.message.reply_text("Let's start over!")
             return self.start(update, context)
