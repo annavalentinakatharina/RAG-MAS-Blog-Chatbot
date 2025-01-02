@@ -21,8 +21,15 @@ class TelegramBot:
         if update.message.text == "start configuration":
             await update.message.reply_text("Great, you want to start the blog article configuration! First, what topic should the blog article be about? Or what task should the blog article fulfil? If you have a topic please respond with 'topic', if you have a separate task please respond with 'task'.")
             return self.TOPIC_OR_TASK
-        response = str(self.ai.invoke(update.message.text))
+        #response = str(self.ai.invoke(update.message.text))
+        #await update.message.reply_html(response)
+
+        context.user_data['history'] = context.user_data.get('history', []) + [update.message.text]
+        history = "\n".join(context.user_data['history'])
+        response = str(self.ai.invoke(history))
         await update.message.reply_html(response)
+        context.user_data['history'].append(response)
+        print(history)
         return self.CHAT
 
     async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -30,6 +37,7 @@ class TelegramBot:
         user = update.effective_user
         await update.message.reply_html(
             rf"Hi {user.mention_html()}! This is a chatbot for creating blog articles using RAG and MAS systems! You have two ways of using this chatbot: Either by chatting with a LLM model, or by using the configuring your blog article and generating it using RAG and MAS. When you are ready to start configuration, type in 'start configuration'. ")
+        context.user_data['history'] = []
         return self.CHAT
 
     async def topic_or_task(self, update: Update, context: CallbackContext):
@@ -143,11 +151,17 @@ class TelegramBot:
                 'language_level': user_data['language_level'],
                 'tone': user_data['tone'],
                 'language': user_data['language'],
+                'history': user_data['history'],
             }
+            context.user_data['history'] = context.user_data.get('history', []) + [str(inputs)]
+            history = "\n".join(context.user_data['history'])
             filtered_tools = [tool for tool in self.tools if tool is not None]
             bot = BaRagmasChatbot(filtered_tools)
+            print(history)
             response = str(bot.crew().kickoff(inputs=inputs))
             response = await update.message.reply_text(response)
+            context.user_data["history"].append(response)
+            print(history)
             return self.CHAT
         else:
             await update.message.reply_text("Let's start over!")

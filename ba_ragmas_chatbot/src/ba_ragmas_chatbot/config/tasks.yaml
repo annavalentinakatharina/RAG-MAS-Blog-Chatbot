@@ -16,6 +16,7 @@ editor_task:
     Level of language: {language_level}
     Tone: {tone}
     Language: {language}
+    History: {history}
   expected_output: >
     A list of bullet points of the topic of each paragraph about {topic}
   agent: editor
@@ -29,6 +30,7 @@ writer_task:
     Level of language: {language_level}
     Tone: {tone}
     Language: {language}
+    History: {history}
   expected_output: >
     A blog article about {topic}
   agent: writer
@@ -42,6 +44,7 @@ proofreader_task:
     Level of language: {language_level}
     Tone: {tone}
     Language: {language}
+    History: {history}
   expected_output: >
     An improved blog article about {topic}
   agent: proofreader
