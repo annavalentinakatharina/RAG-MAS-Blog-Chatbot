@@ -18,12 +18,10 @@ class TelegramBot:
     ai = OllamaLLM(model="llama3.1:8b-instruct-q8_0")
 
     async def chat(self, update: Update, context: CallbackContext):
-        if update.message.text == "start configuration":
+        """Interaction with the second not-RAG-MAS llm when the blog article configuration is deactivated"""
+        if update.message.text.lower() == "start configuration":
             await update.message.reply_text("Great, you want to start the blog article configuration! First, what topic should the blog article be about? Or what task should the blog article fulfil? If you have a topic please respond with 'topic', if you have a separate task please respond with 'task'.")
             return self.TOPIC_OR_TASK
-        #response = str(self.ai.invoke(update.message.text))
-        #await update.message.reply_html(response)
-
         context.user_data['history'] = context.user_data.get('history', []) + [update.message.text]
         history = "\n".join(context.user_data['history'])
         response = str(self.ai.invoke(history))
@@ -41,6 +39,7 @@ class TelegramBot:
         return self.CHAT
 
     async def topic_or_task(self, update: Update, context: CallbackContext):
+        """Manages if the system should write an article on a topic or if it should do a task"""
         if update.message.text == "topic":
             await update.message.reply_text("Okay, topic it is! What topic should the blog article be about?")
             return self.TOPIC
@@ -52,16 +51,19 @@ class TelegramBot:
             return self.TOPIC_OR_TASK
 
     async def topic(self, update: Update, context: CallbackContext):
+        """Saves the topic in the user data"""
         context.user_data['topic'] = update.message.text
         await update.message.reply_text("Great! Do you have a link to a website with information you want to have included? If yes, please reply with the link, if not, please just send 'no'.")
         return self.WEBSITE
 
     async def task(self, update: Update, context: CallbackContext):
+        """Saves the task in the user data"""
         context.user_data['topic'] = "fulfilling task " + update.message.text
         await update.message.reply_text("Great! Do you have a link to a website with information you want to have included? If yes, please reply with the link, if not, please just send 'no'.")
         return self.WEBSITE
 
     async def website(self, update: Update, context: CallbackContext):
+        """Saves a website link in the user data if one is sent"""
         if update.message.text != "no" and update.message.text != "No":
             self.tools.append(self.addWebsite(update.message.text))
         await update.message.reply_text(
@@ -69,6 +71,7 @@ class TelegramBot:
         return self.DOCUMENT
 
     async def document(self, update: Update, context: CallbackContext):
+        """Saves a document in the 'documents' folder and the storage link in the user data if one is sent"""
         document = update.message.document
         file_path = ""
         if document:
@@ -93,7 +96,8 @@ class TelegramBot:
         return self.LENGTH
 
     async def no_document(self, update: Update, context: CallbackContext):
-        if update.message.text != "no":
+        """Manages what happens when no document is sent"""
+        if update.message.text.lower() != "no":
             await update.message.reply_text("Not valid, please respond with either a document or 'no'.")
             return self.DOCUMENT
         await update.message.reply_text(
@@ -101,30 +105,35 @@ class TelegramBot:
         return self.LENGTH
 
     async def length(self, update: Update, context: CallbackContext):
+        """Saves the configured length in the user data"""
         context.user_data['length'] = update.message.text
         await update.message.reply_text(
             "Great! What language level should it be? (e.g. Beginner, Intermediate, Advanced)")
         return self.LANGUAGE_LEVEL
 
     async def language_level(self, update: Update, context: CallbackContext):
+        """Saves the configured language level in the user data"""
         context.user_data['language_level'] = update.message.text
         await update.message.reply_text(
             "Great! What information level should it be? (e.g. High, Intermediate, Low)")
         return self.INFORMATION
 
     async def information(self, update: Update, context: CallbackContext):
+        """Saves the configured information level in the user data"""
         context.user_data['information'] = update.message.text
         await update.message.reply_text(
             "Great! What language should it be? (e.g. English, German, Spanish)")
         return self.LANGUAGE
 
     async def language(self, update: Update, context: CallbackContext):
+        """Saves the configured language in the user data"""
         context.user_data['language'] = update.message.text
         await update.message.reply_text(
             "Great! What tone should it be? (e.g. Professional, Casual, Friendly)")
         return self.TONE
 
     async def tone(self, update: Update, context: CallbackContext):
+        """Saves the configured tone in the user data and asks """
         context.user_data['tone'] = update.message.text
         # Confirm the selections
         user_data = context.user_data
@@ -141,6 +150,7 @@ class TelegramBot:
         return self.CONFIRM
 
     async def confirm(self, update: Update, context: CallbackContext):
+        """Starts the blog article generation and returns the finished article if answer is yes, else restart the whole process"""
         if update.message.text.lower() == 'yes':
             # Generate response based on inputs
             user_data = context.user_data
@@ -168,16 +178,13 @@ class TelegramBot:
             return self.start(update, context)
 
     async def cancel(self, update: Update, context: CallbackContext):
+        """The fallout function, leaves the conversation"""
         await update.message.reply_text("Conversation canceled. Type /start to begin again.")
         return ConversationHandler.END
 
     def start_bot(self) -> None:
         """Start the bot."""
-        # Create the Application and pass it your bot's token.
         application = Application.builder().token("7727696877:AAEo2aSGPDj0QgBXhk97UWQP8urrgaXuLFw").build()
-
-        # on different commands - answer in Telegram
-        #application.add_handler(CommandHandler("help", self.help_command))
 
         conv_handler = ConversationHandler(
             entry_points=[CommandHandler("start", self.start)],
@@ -197,10 +204,6 @@ class TelegramBot:
             },
             fallbacks=[CommandHandler("cancel", self.cancel)],
         )
-        # on non command i.e message - echo the message on Telegram
-        #application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, self.question))
-
-        # Run the bot until the user presses Ctrl-C
 
         application.add_handler(conv_handler)
         application.run_polling()
