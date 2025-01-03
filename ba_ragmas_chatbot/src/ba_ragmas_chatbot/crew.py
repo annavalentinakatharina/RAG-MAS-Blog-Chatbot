@@ -24,18 +24,16 @@ class BaRagmasChatbot():
 	@before_kickoff
 	def before_kickoff_function(self, inputs):
 		print(f"Before kickoff function with inputs: {inputs}")
-		return inputs  # You can return the inputs or modify them as needed
+		return inputs
 
 	@after_kickoff
 	def after_kickoff_function(self, result):
 		print(f"After kickoff function with result: {result}")
-		return result  # You can return the result or modify it as needed
+		return result
 
-	# If you would like to add tools to your agents, you can learn more about it here:
-	# https://docs.crewai.com/concepts/agents#agent-tools
 	@agent
 	def researcher(self) -> Agent:
-		print("Researcher made")
+		"""The researcher agent which corresponds to the researcher specified in the agents.yaml."""
 		return Agent(
 			config=self.agents_config['researcher'],
 			llm=LLM(model="ollama/llama3.1:8b-instruct-q8_0", base_url="http://localhost:11434"),
@@ -45,24 +43,25 @@ class BaRagmasChatbot():
 
 	@agent
 	def editor(self) -> Agent:
+		"""The editor agent which corresponds to the editor specified in the agents.yaml."""
 		return Agent(
 			config=self.agents_config['editor'],
 			llm=LLM(model="ollama/llama3.1:8b-instruct-q8_0", base_url="http://localhost:11434"),
-			#tools=self.tools,
 			verbose=True
 		)
 
 	@agent
 	def writer(self) -> Agent:
+		"""The writer agent which corresponds to the writer specified in the agents.yaml."""
 		return Agent(
 			config=self.agents_config['writer'],
 			llm=LLM(model="ollama/llama3.1:8b-instruct-q8_0", base_url="http://localhost:11434"),
-			#tools=self.tools,
 			verbose=True
 		)
 
 	@agent
 	def proofreader(self) -> Agent:
+		"""The proofreader agent which corresponds to the proofreader specified in the agents.yaml."""
 		return Agent(
 			config=self.agents_config['proofreader'],
 			llm=LLM(model="ollama/llama3.1:8b-instruct-q8_0", base_url="http://localhost:11434"),
@@ -71,6 +70,7 @@ class BaRagmasChatbot():
 
 	# @agent
 	# def factchecker(self) -> Agent:
+	#"""The factchecker agent which corresponds to the factchecker specified in the agents.yaml."""
 	# 	return Agent(
 	# 		config=self.agents_config['factchecker'],
 	# 		llm=LLM(model="ollama/llama3.1:8b-instruct-q8_0", base_url="http://localhost:11434"),
@@ -78,35 +78,37 @@ class BaRagmasChatbot():
 	# 		verbose=True
 	# 	)
 
-	# To learn more about structured task outputs, 
-	# task dependencies, and task callbacks, check out the documentation:
-	# https://docs.crewai.com/concepts/tasks#overview-of-a-task
 	@task
 	def research_task(self) -> Task:
+		"""The research task which corresponds to the research task specified in the tasks.yaml."""
 		return Task(
 			config=self.tasks_config['research_task'],
 		)
 
 	@task
 	def editor_task(self) -> Task:
+		"""The editor task which corresponds to the editor task specified in the tasks.yaml."""
 		return Task(
 			config=self.tasks_config['editor_task'],
 		)
 
 	@task
 	def writer_task(self) -> Task:
+		"""The writer task which corresponds to the writer task specified in the tasks.yaml."""
 		return Task(
 			config=self.tasks_config['writer_task'],
 		)
 
 	@task
 	def proofreader_task(self) -> Task:
+		"""The proofreader task which corresponds to the proofreader task specified in the tasks.yaml."""
 		return Task(
 			config=self.tasks_config['proofreader_task'],
 		)
 
 	# @task
 	# def factchecker_task(self) -> Task:
+	#	"""The factchecker task which corresponds to the factchecker task specified in the tasks.yaml."""
 	# 	return Task(
 	# 		config=self.tasks_config['factchecker_task'],
 	# 	)
@@ -114,12 +116,10 @@ class BaRagmasChatbot():
 	@crew
 	def crew(self) -> Crew:
 		"""Creates the BaRagmasChatbot crew"""
-		# To learn how to add knowledge sources to your crew, check out the documentation:
-		# https://docs.crewai.com/concepts/knowledge#what-is-knowledge
 
 		return Crew(
-			agents=self.agents, # Automatically created by the @agent decorator
-			tasks=self.tasks, # Automatically created by the @task decorator
+			agents=self.agents,
+			tasks=self.tasks,
 			process=Process.sequential,
 			verbose=True,
 			# process=Process.hierarchical, # In case you wanna use that instead https://docs.crewai.com/how-to/Hierarchical/
