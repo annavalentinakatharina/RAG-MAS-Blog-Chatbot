@@ -2,6 +2,7 @@ import os
 
 from crewai_tools.tools import DOCXSearchTool, PDFSearchTool, TXTSearchTool, WebsiteSearchTool
 from telegram import ForceReply, Update, ReplyKeyboardMarkup
+from telegram.error import BadRequest
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters, CallbackContext, ConversationHandler
 from langchain_ollama import OllamaLLM
 from src.ba_ragmas_chatbot.crew import BaRagmasChatbot
@@ -208,6 +209,7 @@ class TelegramBot:
 
     async def confirm(self, update: Update, context: CallbackContext):
         """Starts the blog article generation and returns the finished article if answer is yes, else restart the whole process"""
+        response = ""
         try:
             if update.message.text.lower() == 'yes':
                 user_data = context.user_data
@@ -233,6 +235,11 @@ class TelegramBot:
             else:
                 await update.message.reply_text("Let's start over!")
                 return self.start(update, context)
+        except BadRequest as b:
+            if b.message == "Message is too long":
+                responses = response.split("\n\n")
+                for response in responses:
+                    await update.message.reply_text(response)
         except Exception as e:
             await update.message.reply_text(f"An error occurred: {str(e)}. \nPlease resend if you want to confirm the inputs or not.")
             return self.CONFIRM
