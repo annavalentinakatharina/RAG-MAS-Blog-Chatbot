@@ -4,6 +4,7 @@ import warnings
 
 from ba_ragmas_chatbot.crew import BaRagmasChatbot
 from ba_ragmas_chatbot.chatbot import TelegramBot
+from telegram.error import NetworkError
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 
@@ -16,8 +17,11 @@ def run():
     """
     Run the crew.
     """
-    telegram_bot = TelegramBot()
-    telegram_bot.start_bot()
+    try:
+        telegram_bot = TelegramBot()
+        telegram_bot.start_bot()
+    except NetworkError as e:
+        print("No internet connection, please connect your device to a network and restart the programm.")
     # topic = input("What should the blog article be about?\n")
     # length = input("What length should the blog article be about?\n")
     # information_level = input("What information level should the blog article be about?\n")
