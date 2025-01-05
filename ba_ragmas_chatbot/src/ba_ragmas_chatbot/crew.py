@@ -1,6 +1,5 @@
 from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task, before_kickoff, after_kickoff
-from crewai_tools import WebsiteSearchTool, PDFSearchTool, DOCXSearchTool, TXTSearchTool
 
 # If you want to run a snippet of code before or after the crew starts, 
 # you can use the @before_kickoff and @after_kickoff decorators
