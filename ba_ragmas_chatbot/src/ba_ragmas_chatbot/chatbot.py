@@ -124,6 +124,9 @@ class TelegramBot:
                         self.addDOCX(file_path)
                     case "text/plain":
                         self.addTxt(file_path)
+                    case _:
+                        await update.message.reply_text("Invalid file type, only acceptable file endings are: PDF, TXT and DOXC. Please convert and send your document again.")
+                        return self.DOCUMENT
             await update.message.reply_text("How long should the blog article be? (e.g. Short, Medium, Long)"),
             return self.LENGTH
         except Exception as e:

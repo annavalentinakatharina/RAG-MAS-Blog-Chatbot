@@ -111,6 +111,29 @@ async def test_topic_or_task_none():
     assert result == 3
 
 @pytest.mark.asyncio
+async def test_topic_or_task_throw_error():
+    #arrange
+    mock_message = MagicMock(spec=Message)
+    mock_message.text = "nothing"
+    mock_message.reply_text = AsyncMock(side_effect=[
+        Exception("Simulated error in topic_or_task"),
+        None
+    ])
+    mock_update = MagicMock(spec=Update)
+    mock_update.message = mock_message
+
+    mock_context = MagicMock(spec=CallbackContext)
+    bot = TelegramBot()
+
+    #act
+    result = await bot.topic_or_task(mock_update, mock_context)
+
+    #assert
+    mock_message.reply_text.assert_any_call(
+        "An error occurred: Simulated error in topic_or_task. \nPlease answer with 'topic' or 'task' again.")
+
+
+@pytest.mark.asyncio
 async def test_topic():
     #arrange
     mock_message = MagicMock(spec=Message)
@@ -129,6 +152,29 @@ async def test_topic():
         "Great! Do you have a link to a website with information you want to have included? If yes, please reply with the link, if not, please just send 'no'."
     )
     assert result == 4
+
+@pytest.mark.asyncio
+async def test_topic_throw_error():
+    #arrange
+    mock_message = MagicMock(spec=Message)
+    mock_message.text = "nothing"
+    mock_message.reply_text = AsyncMock(side_effect=[
+        Exception("Simulated error in topic"),
+        None
+    ])
+    mock_update = MagicMock(spec=Update)
+    mock_update.message = mock_message
+
+    mock_context = MagicMock(spec=CallbackContext)
+    bot = TelegramBot()
+
+    #act
+    result = await bot.topic(mock_update, mock_context)
+
+    #assert
+    mock_message.reply_text.assert_any_call(
+        "An error occurred: Simulated error in topic. \nPlease resend your topic.")
+
 
 @pytest.mark.asyncio
 async def test_task():
@@ -150,6 +196,29 @@ async def test_task():
         "Great! Do you have a link to a website with information you want to have included? If yes, please reply with the link, if not, please just send 'no'."
     )
     assert result == 4
+
+@pytest.mark.asyncio
+async def test_task_throw_error():
+    #arrange
+    mock_message = MagicMock(spec=Message)
+    mock_message.text = "nothing"
+    mock_message.reply_text = AsyncMock(side_effect=[
+        Exception("Simulated error in task"),
+        None
+    ])
+    mock_update = MagicMock(spec=Update)
+    mock_update.message = mock_message
+
+    mock_context = MagicMock(spec=CallbackContext)
+    bot = TelegramBot()
+
+    #act
+    result = await bot.task(mock_update, mock_context)
+
+    #assert
+    mock_message.reply_text.assert_any_call(
+        "An error occurred: Simulated error in task. \nPlease resend your task.")
+
 
 @pytest.mark.asyncio
 async def test_website_no():
@@ -193,7 +262,30 @@ async def test_website_website():
     assert result == 5
 
 @pytest.mark.asyncio
-async def test_documents_no():
+async def test_website_throw_error():
+    #arrange
+    mock_message = MagicMock(spec=Message)
+    mock_message.text = "nothing"
+    mock_message.reply_text = AsyncMock(side_effect=[
+        Exception("Simulated error in website"),
+        None
+    ])
+    mock_update = MagicMock(spec=Update)
+    mock_update.message = mock_message
+
+    mock_context = MagicMock(spec=CallbackContext)
+    bot = TelegramBot()
+
+    #act
+    result = await bot.website(mock_update, mock_context)
+
+    #assert
+    mock_message.reply_text.assert_any_call(
+        "An error occurred: Simulated error in website. \nPlease resend your link or 'no'.")
+
+
+@pytest.mark.asyncio
+async def test_no_documents_no():
     #arrange
     mock_message = MagicMock(spec=Message)
     mock_message.text = "no"
@@ -212,6 +304,47 @@ async def test_documents_no():
                         "How long should the blog article be? (e.g. Short, Medium, Long)"
     )
     assert result == 6
+
+@pytest.mark.asyncio
+async def test_no_documents_not_no():
+    #arrange
+    mock_message = MagicMock(spec=Message)
+    mock_message.text = "nothing"
+    mock_message.reply_text = AsyncMock()
+    mock_update = MagicMock(spec=Update)
+    mock_update.message = mock_message
+
+    mock_context = MagicMock(spec=CallbackContext)
+    bot = TelegramBot()
+
+    #act
+    result = await bot.no_document(mock_update, mock_context)
+
+    #assert
+    assert result == 5
+
+@pytest.mark.asyncio
+async def test_no_document_throw_error():
+    #arrange
+    mock_message = MagicMock(spec=Message)
+    mock_message.text = "nothing"
+    mock_message.reply_text = AsyncMock(side_effect=[
+        Exception("Simulated error in no_document"),
+        None
+    ])
+    mock_update = MagicMock(spec=Update)
+    mock_update.message = mock_message
+
+    mock_context = MagicMock(spec=CallbackContext)
+    bot = TelegramBot()
+
+    #act
+    result = await bot.no_document(mock_update, mock_context)
+
+    #assert
+    mock_message.reply_text.assert_any_call(
+        "An error occurred: Simulated error in no_document. \nPlease resend your document or 'no'.")
+
 
 @pytest.mark.asyncio
 async def test_documents_throw_error():
@@ -294,6 +427,29 @@ async def test_length():
     assert result == 7
 
 @pytest.mark.asyncio
+async def test_length_throw_error():
+    #arrange
+    mock_message = MagicMock(spec=Message)
+    mock_message.text = "nothing"
+    mock_message.reply_text = AsyncMock(side_effect=[
+        Exception("Simulated error in length"),
+        None
+    ])
+    mock_update = MagicMock(spec=Update)
+    mock_update.message = mock_message
+
+    mock_context = MagicMock(spec=CallbackContext)
+    bot = TelegramBot()
+
+    #act
+    result = await bot.length(mock_update, mock_context)
+
+    #assert
+    mock_message.reply_text.assert_any_call(
+        "An error occurred: Simulated error in length. \nPlease resend your preferred article length.")
+
+
+@pytest.mark.asyncio
 async def test_language_level():
     #arrange
     mock_message = MagicMock(spec=Message)
@@ -313,6 +469,29 @@ async def test_language_level():
         "Great! What information level should it be? (e.g. High, Intermediate, Low)"
     )
     assert result == 8
+
+@pytest.mark.asyncio
+async def test_language_level_throw_error():
+    #arrange
+    mock_message = MagicMock(spec=Message)
+    mock_message.text = "nothing"
+    mock_message.reply_text = AsyncMock(side_effect=[
+        Exception("Simulated error in language_level"),
+        None
+    ])
+    mock_update = MagicMock(spec=Update)
+    mock_update.message = mock_message
+
+    mock_context = MagicMock(spec=CallbackContext)
+    bot = TelegramBot()
+
+    #act
+    result = await bot.language_level(mock_update, mock_context)
+
+    #assert
+    mock_message.reply_text.assert_any_call(
+        "An error occurred: Simulated error in language_level. \nPlease resend your preferred article language level.")
+
 
 @pytest.mark.asyncio
 async def test_information():
@@ -336,6 +515,29 @@ async def test_information():
     assert result == 9
 
 @pytest.mark.asyncio
+async def test_information_throw_error():
+    #arrange
+    mock_message = MagicMock(spec=Message)
+    mock_message.text = "nothing"
+    mock_message.reply_text = AsyncMock(side_effect=[
+        Exception("Simulated error in information"),
+        None
+    ])
+    mock_update = MagicMock(spec=Update)
+    mock_update.message = mock_message
+
+    mock_context = MagicMock(spec=CallbackContext)
+    bot = TelegramBot()
+
+    #act
+    result = await bot.information(mock_update, mock_context)
+
+    #assert
+    mock_message.reply_text.assert_any_call(
+        "An error occurred: Simulated error in information. \nPlease resend your preferred article information level.")
+
+
+@pytest.mark.asyncio
 async def test_language():
     #arrange
     mock_message = MagicMock(spec=Message)
@@ -357,6 +559,29 @@ async def test_language():
     assert result == 10
 
 @pytest.mark.asyncio
+async def test_language_throw_error():
+    #arrange
+    mock_message = MagicMock(spec=Message)
+    mock_message.text = "nothing"
+    mock_message.reply_text = AsyncMock(side_effect=[
+        Exception("Simulated error in language"),
+        None
+    ])
+    mock_update = MagicMock(spec=Update)
+    mock_update.message = mock_message
+
+    mock_context = MagicMock(spec=CallbackContext)
+    bot = TelegramBot()
+
+    #act
+    result = await bot.language(mock_update, mock_context)
+
+    #assert
+    mock_message.reply_text.assert_any_call(
+        "An error occurred: Simulated error in language. \nPlease resend your preferred article language.")
+
+
+@pytest.mark.asyncio
 async def test_tone():
     #arrange
     mock_message = MagicMock(spec=Message)
@@ -373,3 +598,25 @@ async def test_tone():
 
     #assert
     assert result == 11
+
+@pytest.mark.asyncio
+async def test_tone_throw_error():
+    #arrange
+    mock_message = MagicMock(spec=Message)
+    mock_message.text = "nothing"
+    mock_message.reply_text = AsyncMock(side_effect=[
+        Exception("Simulated error in tone"),
+        None
+    ])
+    mock_update = MagicMock(spec=Update)
+    mock_update.message = mock_message
+
+    mock_context = MagicMock(spec=CallbackContext)
+    bot = TelegramBot()
+
+    #act
+    result = await bot.tone(mock_update, mock_context)
+
+    #assert
+    mock_message.reply_text.assert_any_call(
+        "An error occurred: Simulated error in tone. \nPlease resend your preferred article tone.")
