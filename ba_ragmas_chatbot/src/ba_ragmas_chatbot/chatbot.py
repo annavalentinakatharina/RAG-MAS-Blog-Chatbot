@@ -17,6 +17,7 @@ class TelegramBot:
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         "text/plain",
     ]
+    token = 'config/configs.yaml'['chatbot_token']
     tools = []
     ai = OllamaLLM(model="llama3.1:8b-instruct-q8_0")
     logger = logger_config.get_logger('telegram bot')
@@ -320,7 +321,7 @@ class TelegramBot:
 
     def start_bot(self) -> None:
         """Start the bot."""
-        application = Application.builder().token("7727696877:AAEo2aSGPDj0QgBXhk97UWQP8urrgaXuLFw").build()
+        application = Application.builder().token(token).build()
         self.logger.info("Telegram Bot successfully started.")
 
         conv_handler = ConversationHandler(
