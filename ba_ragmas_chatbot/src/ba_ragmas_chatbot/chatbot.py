@@ -120,6 +120,10 @@ class TelegramBot:
             self.logger.debug(f"website: Function successfully called with message {str(update.message.text)}")
             if update.message.text.lower() != "no":
                 self.tools.append(self.addWebsite(update.message.text))
+                response = "Okay, do you have another link to a website with information you want to have included? If yes, please reply with the link, if not, please just send 'no'."
+                await update.message.reply_text(response)
+                self.logger.debug(f"website: Response message successfully sent. Message: {str(response)}")
+                return self.WEBSITE
             response = "Great! Do you have a document with information you want to have included? If yes, please reply with the document, if not, please just send 'no'."
             await update.message.reply_text(response)
             self.logger.debug(f"website: Response message successfully sent. Message: {str(response)}")
@@ -160,10 +164,10 @@ class TelegramBot:
                         self.logger.warn(f"document: Invalid file type sent: {str(document.mime_type)}")
                         return self.DOCUMENT
                 self.logger.debug(f"document: File Mime Type: {str(document.mime_type)}")
-            response = "How long should the blog article be? (e.g. Short, Medium, Long)"
+            response = "Do you have another document you want to upload? If yes, please reply with the document, if not, please just send 'no'."
             await update.message.reply_text(response)
             self.logger.debug(f"document: Response message successfully sent. Message: {str(response)}")
-            return self.LENGTH
+            return self.DOCUMENT
         except Exception as e:
             await update.message.reply_text(f"An error occurred: {str(e)}. \nPlease resend your document or 'no'.")
             self.logger.error(f"document: An exception occurred: {str(e)}")
