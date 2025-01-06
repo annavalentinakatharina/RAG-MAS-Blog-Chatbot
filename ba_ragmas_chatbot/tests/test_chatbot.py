@@ -255,10 +255,9 @@ async def test_website_website():
     result = await bot.website(mock_update, mock_context)
 
     #assert
-    mock_message.reply_text.assert_called_once_with(
-                        "Great! Do you have a document with information you want to have included? If yes, please reply with the document, if not, please just send 'no'."
+    mock_message.reply_text.assert_called_once_with("Okay, do you have another link to a website with information you want to have included? If yes, please reply with the link, if not, please just send 'no'."
     )
-    assert result == 5
+    assert result == 4
 
 @pytest.mark.asyncio
 async def test_website_throw_error():
@@ -402,7 +401,7 @@ async def test_documents_document():
 
     mock_file.download_to_drive.assert_called_once_with(test_file_path)
 
-    assert result == 6
+    assert result == 5
 
 @pytest.mark.asyncio
 async def test_length():
