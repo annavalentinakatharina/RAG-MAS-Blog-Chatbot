@@ -21,7 +21,9 @@ def run():
     try:
         logger = logger_config.get_logger("main")
         telegram_bot = TelegramBot()
+        logger.info("run: Telegram bot created.")
         telegram_bot.start_bot()
+        logger.info("run: Telegram bot started and shut down.")
         logger_config.shutdown()
     except NetworkError as e:
         print("No internet connection, please connect your device to a network and restart the programm.")
