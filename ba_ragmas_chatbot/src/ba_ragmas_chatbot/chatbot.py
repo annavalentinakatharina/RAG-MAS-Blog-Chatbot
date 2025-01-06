@@ -1,4 +1,5 @@
 import os
+import yaml
 
 from crewai_tools.tools import DOCXSearchTool, PDFSearchTool, TXTSearchTool, WebsiteSearchTool
 from telegram import ForceReply, Update, ReplyKeyboardMarkup
@@ -17,7 +18,11 @@ class TelegramBot:
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         "text/plain",
     ]
-    token = 'config/configs.yaml'['chatbot_token']
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    yaml_file = os.path.join(current_dir, "config", "configs.yaml")
+    with open(yaml_file, 'r') as file:
+        config = yaml.safe_load(file)
+    token = config['chatbot_token']['token']
     tools = []
     ai = OllamaLLM(model="llama3.1:8b-instruct-q8_0")
     logger = logger_config.get_logger('telegram bot')
@@ -37,7 +42,6 @@ class TelegramBot:
             await update.message.reply_html(response)
             self.logger.debug(f"chat: Query successfully answered with {str(response)}")
             context.user_data['history'].append(str(response))
-            print(history)
             return self.CHAT
         except Exception as e:
             await update.message.reply_text(f"chat: An error occurred: {str(e)}")
@@ -321,7 +325,7 @@ class TelegramBot:
 
     def start_bot(self) -> None:
         """Start the bot."""
-        application = Application.builder().token(token).build()
+        application = Application.builder().token(self.token).build()
         self.logger.info("Telegram Bot successfully started.")
 
         conv_handler = ConversationHandler(

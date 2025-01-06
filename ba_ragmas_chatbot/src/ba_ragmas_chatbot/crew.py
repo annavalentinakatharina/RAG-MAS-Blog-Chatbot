@@ -13,7 +13,6 @@ class BaRagmasChatbot():
 	"""BaRagmasChatbot crew"""
 
 	def __init__(self, tools):
-		print("Intializing BaRagmasChatbot")
 		self.tools = tools
 		self.logger = logger_config.get_logger("crew ai")
 
