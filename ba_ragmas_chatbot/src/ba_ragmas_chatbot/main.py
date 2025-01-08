@@ -45,7 +45,6 @@ def run():
     # }
     # bot.crew().kickoff(inputs=inputs)
 
-
 def train():
     """
     Train the crew for a given number of iterations.

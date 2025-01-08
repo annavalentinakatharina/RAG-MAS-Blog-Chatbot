@@ -2,18 +2,18 @@ research_task:
   description: >
     Conduct a thorough research about {topic}, using mainly the resources given to you via the tools, only reverting to other sources if completely necessary.
     Make sure you find any interesting and relevant information given
-    the current year is 2024.
+    the current year is 2025.
   expected_output: >
     A list with 10 bullet points of the most relevant information about {topic}
   agent: researcher
 
 editor_task:
   description: >
-    Plan and structure a blog article about a {topic}.
+    Plan and structure a blog article about {topic}.
     Make sure to cover the most important pieces of information.
-    Length of Article: {length}
+    Article length: {length}
     Amount of information: {information_level}
-    Level of language: {language_level}
+    Language level: {language_level}
     Tone: {tone}
     Language: {language}
     History: {history}
@@ -25,9 +25,9 @@ writer_task:
   description: >
     Write a blog article about {topic}.
     Use the list of paragraph topics provided, and base each paragraph on the topic given.
-    Length of Article: {length}
+    Article length: {length}
     Amount of information: {information_level}
-    Level of language: {language_level}
+    Language level: {language_level}
     Tone: {tone}
     Language: {language}
     History: {history}
@@ -37,11 +37,11 @@ writer_task:
 
 proofreader_task:
   description: >
-    Proofread and grammatically improve a blog article about a {topic}.
+    Proofread, factcheck and grammatically improve a blog article about {topic}.
     Make sure to check the grammar, spelling and generally the writing of the given article, but without changing its meaning in any way.
-    Length of Article: {length}
+    Article length: {length}
     Amount of information: {information_level}
-    Level of language: {language_level}
+    Language level: {language_level}
     Tone: {tone}
     Language: {language}
     History: {history}
