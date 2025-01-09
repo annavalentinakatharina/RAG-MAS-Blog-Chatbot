@@ -48,6 +48,12 @@ class TelegramBot:
             await update.message.reply_text(f"chat: An error occurred: {str(e)}")
             return self.CHAT
 
+    async def clear(self, update: Update, context: CallbackContext):
+        context.user_data.clear()
+        self.logger.info(f"clear: Conversation successfully cleared.")
+        await update.message.reply_text("Conversation successfully cleared! Your conversation was restarted, so please either restart your configuration or chat with the LLM!")
+        return self.CHAT
+
     async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Send a message when the command /start is issued."""
         try:
@@ -458,7 +464,7 @@ class TelegramBot:
                 self.CONFIRM: [MessageHandler(filters.TEXT & ~filters.COMMAND, self.confirm)],
                 self.ADDITIONAL: [MessageHandler(filters.TEXT & ~filters.COMMAND, self.additional)],
             },
-            fallbacks=[CommandHandler("cancel", self.cancel)],
+            fallbacks=[CommandHandler("cancel", self.cancel), CommandHandler("clear", self.clear)],
         )
 
         application.add_handler(conv_handler)
