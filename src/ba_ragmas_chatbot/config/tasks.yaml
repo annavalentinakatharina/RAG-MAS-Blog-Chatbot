@@ -1,0 +1,68 @@
+research_task:
+  description: >
+    Conduct a thorough research about {topic}, using mainly the resources given to you via the tools, only reverting to other sources if completely necessary.
+    Make sure you find any interesting and relevant information given
+    the current year is 2025.
+  expected_output: >
+    A list with 10 bullet points of the most relevant information about {topic}
+  agent: researcher
+
+editor_task:
+  description: >
+    Plan and structure a blog article about {topic}.
+    Make sure to cover the most important pieces of information.
+    Article length: {length}
+    Amount of information: {information_level}
+    Language level: {language_level}
+    Tone: {tone}
+    Language: {language}
+    Additional information: {additional_information}
+    History: {history}
+  expected_output: >
+    A list of bullet points of the topic of each paragraph about {topic}
+  agent: editor
+
+writer_task:
+  description: >
+    Write a blog article about {topic}.
+    Use the list of paragraph topics provided, and base each paragraph on the topic given.
+    Article length: {length}
+    Amount of information: {information_level}
+    Language level: {language_level}
+    Tone: {tone}
+    Language: {language}
+    Additional information: {additional_information}
+    History: {history}
+  expected_output: >
+    A blog article about {topic}
+  agent: writer
+
+proofreader_task:
+  description: >
+    Proofread, factcheck and grammatically improve a blog article about {topic}.
+    Make sure to check the grammar, spelling and generally the writing of the given article, but without changing its meaning in any way.
+    Article length: {length}
+    Amount of information: {information_level}
+    Language level: {language_level}
+    Tone: {tone}
+    Language: {language}
+    Additional information: {additional_information}
+    History: {history}
+  expected_output: >
+    An improved blog article about {topic}
+  agent: proofreader
+
+#factchecker_task:
+#  description: >
+#    Fact-heck the facts mentioned in a blog article about a {topic}.
+#    Make sure to cover all pieces of information in the given article, and make sure that everything in it is true.
+#    Return the article that includes only fact-checked data.
+#    Length of Article: {length}
+#    Amount of information: {information_level}
+#    Level of language: {language_level}
+#    Tone: {tone}
+#    Language: {language}
+#  expected_output: >
+#    An improved blog article about {topic}
+#  agent: factchecker
+
