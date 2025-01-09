@@ -146,7 +146,7 @@ class TelegramBot:
         """Saves the task in the user data"""
         try:
             self.logger.debug(f"task: Function successfully called with message {str(update.message.text)}")
-            context.user_data['topic'] = "fulfilling task " + update.message.text
+            context.user_data['topic'] = update.message.text
             response = "Great! Do you have a link to a website with information you want to have included? If yes, please reply with the link, if not, please just send 'no'."
             await update.message.reply_text(response)
             self.logger.debug(f"task: Response message successfully sent. Message: {str(response)}")
