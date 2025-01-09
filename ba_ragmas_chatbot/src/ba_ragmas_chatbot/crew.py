@@ -54,6 +54,7 @@ class BaRagmasChatbot():
 			config=self.agents_config['researcher'],
 			llm=LLM(model=self.llm, base_url=self.url),
 			tools = self.tools,
+			max_retry_limit = 2,
 			verbose=True
 		)
 
@@ -64,6 +65,7 @@ class BaRagmasChatbot():
 		return Agent(
 			config=self.agents_config['editor'],
 			llm=LLM(model=self.llm, base_url=self.url),
+			max_retry_limit=2,
 			verbose=True
 		)
 
@@ -74,6 +76,7 @@ class BaRagmasChatbot():
 		return Agent(
 			config=self.agents_config['writer'],
 			llm=LLM(model=self.llm, base_url=self.url),
+			max_retry_limit=2,
 			verbose=True
 		)
 
@@ -84,6 +87,7 @@ class BaRagmasChatbot():
 		return Agent(
 			config=self.agents_config['proofreader'],
 			llm=LLM(model=self.llm, base_url=self.url),
+			max_retry_limit=2,
 			verbose=True
 		)
 
