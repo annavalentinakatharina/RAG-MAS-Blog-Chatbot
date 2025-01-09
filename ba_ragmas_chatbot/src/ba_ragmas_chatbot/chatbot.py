@@ -32,11 +32,6 @@ class TelegramBot:
         """Interaction with the second not-RAG-MAS llm when the blog article configuration is deactivated"""
         try:
             self.logger.debug(f"chat: Function successfully called with message {str(update.message.text)}")
-            if update.message.text.lower() == "start configuration":
-                await update.message.reply_text(
-                    "Great, you want to start the blog article configuration! First, what topic should the blog article be about? Or what task should the blog article fulfil? If you have a topic please respond with 'topic', if you have a separate task please respond with 'task'.")
-                self.logger.debug("chat: Blog article configuration started.")
-                return self.TOPIC_OR_TASK
             context.user_data['history'] = context.user_data.get('history', []) + [update.message.text]
             history = "\n".join(context.user_data['history'])
             response = str(self.ai.invoke(history))
@@ -59,7 +54,7 @@ class TelegramBot:
         try:
             user = update.effective_user
             self.logger.info(f"start: Conversation successfully started with user {str(user.mention_html())}. ")
-            response = rf"Hi {user.mention_html()}! This is a chatbot for creating blog articles using RAG and MAS systems! You have two ways of using this chatbot: Either by chatting with a LLM model, or by using the configuring your blog article and generating it using Reality-Augmented Generation and Multi-Agent Systems. When you are ready to start configuration, type in 'start configuration'. "
+            response = rf"Hi {user.mention_html()}! This is a chatbot for creating blog articles using RAG and MAS systems! You have two ways of using this chatbot: Either by chatting with a LLM model, or by using the configuring your blog article and generating it using Reality-Augmented Generation and Multi-Agent Systems. When you are ready to start configuration, use /start_configuration. "
             await update.message.reply_html(response)
             context.user_data['history'] = []
             self.logger.debug(f"start: Response message successfully sent. Message: {str(response)}")
@@ -73,7 +68,7 @@ class TelegramBot:
         """Starts the article configuration"""
         await update.message.reply_text(
             "Great, you want to start the blog article configuration! First, what topic should the blog article be about? Or what task should the blog article fulfil? If you have a topic please respond with 'topic', if you have a separate task please respond with 'task'.")
-        self.logger.debug("chat: Blog article configuration started.")
+        self.logger.debug("start_configuration: Blog article configuration started.")
         return self.TOPIC_OR_TASK
 
     async def topic_or_task(self, update: Update, context: CallbackContext):
@@ -464,7 +459,7 @@ class TelegramBot:
                 self.CONFIRM: [MessageHandler(filters.TEXT & ~filters.COMMAND, self.confirm)],
                 self.ADDITIONAL: [MessageHandler(filters.TEXT & ~filters.COMMAND, self.additional)],
             },
-            fallbacks=[CommandHandler("cancel", self.cancel), CommandHandler("clear", self.clear)],
+            fallbacks=[CommandHandler("cancel", self.cancel), CommandHandler("clear", self.clear), CommandHandler("start_configuration", self.start_configuration)],
         )
 
         application.add_handler(conv_handler)
