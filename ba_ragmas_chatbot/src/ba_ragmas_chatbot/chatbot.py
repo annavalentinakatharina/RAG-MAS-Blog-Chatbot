@@ -23,6 +23,12 @@ class TelegramBot:
     with open(yaml_file, 'r') as file:
         config = yaml.safe_load(file)
     token = config['chatbot_token']['token']
+    llm_name = config['llm']['name']
+    llm_provider = config['llm']['provider_name']
+    llm_url = config['llm']['url']
+    embed_model_name = config['embedding_model']['name']
+    embed_model_provider = config['embedding_model']['provider_name']
+    embed_model_url = config['embedding_model']['url']
     tools = []
     ai = OllamaLLM(model="llama3.1:8b-instruct-q8_0")
     logger = logger_config.get_logger('telegram bot')
@@ -46,6 +52,7 @@ class TelegramBot:
                 self.logger.warn(f"confirm: Message is too long, split up into small packets by double line.")
                 for response in responses:
                     await update.message.reply_text(response)
+            return self.CHAT
         except Exception as e:
             await update.message.reply_text(f"chat: An error occurred: {str(e)}")
             return self.CHAT
@@ -54,6 +61,7 @@ class TelegramBot:
         """Clears the conversation and user history, and returns to chat."""
         try:
             context.user_data.clear()
+            context.user_data['history'] = []
             self.logger.info(f"clear: Conversation successfully cleared.")
             await update.message.reply_text("Conversation successfully cleared! Your conversation was restarted, so please either restart your configuration or chat with the LLM!")
             return self.CHAT
@@ -506,17 +514,17 @@ class TelegramBot:
                 website=url,
                 config=dict(
                     llm=dict(
-                        provider="ollama",
+                        provider=self.llm_provider,
                         config=dict(
-                            model="llama3.1:8b-instruct-q8_0",
-                            base_url="http://localhost:11434",
+                            model=self.llm_name,
+                            base_url=self.llm_url,
                         ),
                     ),
                     embedder=dict(
-                        provider="ollama",
+                        provider=self.embed_model_provider,
                         config=dict(
-                            model="mxbai-embed-large",
-                            base_url="http://localhost:11434",
+                            model=self.embed_model_name,
+                            base_url=self.embed_model_url,
                         ),
                     ),
                 ),
@@ -530,17 +538,17 @@ class TelegramBot:
                 pdf=location,
                 config=dict(
                     llm=dict(
-                        provider="ollama",
+                        provider=self.llm_provider,
                         config=dict(
-                            model="llama3.1:8b-instruct-q8_0",
-                            base_url="http://localhost:11434",
+                            model=self.llm_name,
+                            base_url=self.llm_url,
                         ),
                     ),
                     embedder=dict(
-                        provider="ollama",
+                        provider=self.embed_model_provider,
                         config=dict(
-                            model="mxbai-embed-large",
-                            base_url="http://localhost:11434",
+                            model=self.embed_model_name,
+                            base_url=self.embed_model_url,
                         ),
                     ),
                 )
@@ -555,17 +563,17 @@ class TelegramBot:
                 docx=location,
                 config=dict(
                     llm=dict(
-                        provider="ollama",
+                        provider=self.llm_provider,
                         config=dict(
-                            model="llama3.1:8b-instruct-q8_0",
-                            base_url="http://localhost:11434",
+                            model=self.llm_name,
+                            base_url=self.llm_url,
                         ),
                     ),
                     embedder=dict(
-                        provider="ollama",
+                        provider=self.embed_model_provider,
                         config=dict(
-                            model="mxbai-embed-large",
-                            base_url="http://localhost:11434",
+                            model=self.embed_model_name,
+                            base_url=self.embed_model_url,
                         ),
                     ),
                 )
@@ -579,17 +587,17 @@ class TelegramBot:
                 txt=location,
                 config=dict(
                     llm=dict(
-                        provider="ollama",
+                        provider=self.llm_provider,
                         config=dict(
-                            model="llama3.1:8b-instruct-q8_0",
-                            base_url="http://localhost:11434",
+                            model=self.llm_name,
+                            base_url=self.llm_url,
                         ),
                     ),
                     embedder=dict(
-                        provider="ollama",
+                        provider=self.embed_model_provider,
                         config=dict(
-                            model="mxbai-embed-large",
-                            base_url="http://localhost:11434",
+                            model=self.embed_model_name,
+                            base_url=self.embed_model_url,
                         ),
                     ),
                 )

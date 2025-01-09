@@ -26,7 +26,7 @@ def run():
         logger.info("run: Telegram bot started and shut down.")
         logger_config.shutdown()
     except NetworkError as e:
-        print("No internet connection, please connect your device to a network and restart the programm.")
+        print("No internet connection, please connect your device to a network and restart the program.")
     # topic = input("What should the blog article be about?\n")
     # length = input("What length should the blog article be about?\n")
     # information_level = input("What information level should the blog article be about?\n")

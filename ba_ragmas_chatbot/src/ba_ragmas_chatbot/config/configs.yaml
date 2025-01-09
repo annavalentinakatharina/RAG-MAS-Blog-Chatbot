@@ -1,2 +1,12 @@
 chatbot_token:
-  token: >
+  token:
+
+llm:
+  name: llama3.1:8b-instruct-q8_0
+  provider_name: ollama
+  url: http://localhost:11434
+
+embedding_model:
+  name: mxbai-embed-large
+  provider_name: ollama
+  url: http://localhost:11434
