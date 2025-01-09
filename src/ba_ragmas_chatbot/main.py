@@ -27,23 +27,6 @@ def run():
         logger_config.shutdown()
     except NetworkError as e:
         print("No internet connection, please connect your device to a network and restart the program.")
-    # topic = input("What should the blog article be about?\n")
-    # length = input("What length should the blog article be about?\n")
-    # information_level = input("What information level should the blog article be about?\n")
-    # language_level = input("What language level should the blog article be about?\n")
-    # tone = input("What tone should the blog article have?\n")
-    # language = input("What language should the blog article be about?\n")
-    # bot = BaRagmasChatbot()
-    # bot.addWebsite(input("Give me a link to the topic!"))
-    # inputs = {
-    #     'topic': topic,
-    #     'length': length,
-    #     'information_level': information_level,
-    #     'language_level': language_level,
-    #     'tone': tone,
-    #     'language': language
-    # }
-    # bot.crew().kickoff(inputs=inputs)
 
 def train():
     """
