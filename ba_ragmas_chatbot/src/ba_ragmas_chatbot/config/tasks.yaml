@@ -16,6 +16,7 @@ editor_task:
     Language level: {language_level}
     Tone: {tone}
     Language: {language}
+    Additional information: {additional_information}
     History: {history}
   expected_output: >
     A list of bullet points of the topic of each paragraph about {topic}
@@ -30,6 +31,7 @@ writer_task:
     Language level: {language_level}
     Tone: {tone}
     Language: {language}
+    Additional information: {additional_information}
     History: {history}
   expected_output: >
     A blog article about {topic}
@@ -44,6 +46,7 @@ proofreader_task:
     Language level: {language_level}
     Tone: {tone}
     Language: {language}
+    Additional information: {additional_information}
     History: {history}
   expected_output: >
     An improved blog article about {topic}

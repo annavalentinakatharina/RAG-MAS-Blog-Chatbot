@@ -12,7 +12,7 @@ from src.ba_ragmas_chatbot.crew import BaRagmasChatbot
 
 
 class TelegramBot:
-    CHAT, TOPIC, TASK, TOPIC_OR_TASK, WEBSITE, DOCUMENT, LENGTH, LANGUAGE_LEVEL, INFORMATION, LANGUAGE, TONE, CONFIRM = range(12)
+    CHAT, TOPIC, TASK, TOPIC_OR_TASK, WEBSITE, DOCUMENT, LENGTH, LANGUAGE_LEVEL, INFORMATION, LANGUAGE, TONE, CONFIRM, ADDITIONAL = range(13)
     VALID_MIME_TYPES = [
         "application/pdf",
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -26,6 +26,7 @@ class TelegramBot:
     tools = []
     ai = OllamaLLM(model="llama3.1:8b-instruct-q8_0")
     logger = logger_config.get_logger('telegram bot')
+    retry = False
 
     async def chat(self, update: Update, context: CallbackContext):
         """Interaction with the second not-RAG-MAS llm when the blog article configuration is deactivated"""
@@ -52,7 +53,7 @@ class TelegramBot:
         try:
             user = update.effective_user
             self.logger.info(f"start: Conversation successfully started with user {str(user.mention_html())}. ")
-            response = rf"Hi {user.mention_html()}! This is a chatbot for creating blog articles using RAG and MAS systems! You have two ways of using this chatbot: Either by chatting with a LLM model, or by using the configuring your blog article and generating it using RAG and MAS. When you are ready to start configuration, type in 'start configuration'. "
+            response = rf"Hi {user.mention_html()}! This is a chatbot for creating blog articles using RAG and MAS systems! You have two ways of using this chatbot: Either by chatting with a LLM model, or by using the configuring your blog article and generating it using Reality-Augmented Generation and Multi-Agent Systems. When you are ready to start configuration, type in 'start configuration'. "
             await update.message.reply_html(response)
             context.user_data['history'] = []
             self.logger.debug(f"start: Response message successfully sent. Message: {str(response)}")
@@ -61,6 +62,13 @@ class TelegramBot:
             await update.message.reply_text(f"An error occurred: {str(e)}")
             self.logger.error(f"start: Tried to start conversation, but an exception occurred: {str(e)}")
             return self.CHAT
+
+    async def start_configuration(self, update:Update, context: ContextTypes.DEFAULT_TYPE):
+        """Starts the article configuration"""
+        await update.message.reply_text(
+            "Great, you want to start the blog article configuration! First, what topic should the blog article be about? Or what task should the blog article fulfil? If you have a topic please respond with 'topic', if you have a separate task please respond with 'task'.")
+        self.logger.debug("chat: Blog article configuration started.")
+        return self.TOPIC_OR_TASK
 
     async def topic_or_task(self, update: Update, context: CallbackContext):
         """Manages if the system should write an article on a topic or if it should do a task"""
@@ -76,6 +84,11 @@ class TelegramBot:
                 await update.message.reply_text(response)
                 self.logger.debug(f"topic_or_task: Response message successfully sent. Message: {str(response)}")
                 return self.TASK
+            if update.message.text == "no":
+                response = f"Okay, you want to keep your topic or task! Next, do you want to add another link to a website? If yes, please respond with the new link, if not, please respond with 'no'."
+                await update.message.reply_text(response)
+                self.logger.debug(f"topic_or_task: Reconfiguration response successfully sent. Message: {str(response)}")
+                return self.WEBSITE
             else:
                 response = "Not valid, please respond with either 'topic' or 'task'."
                 await update.message.reply_text(response)
@@ -118,12 +131,26 @@ class TelegramBot:
         """Saves a website link in the user data if one is sent"""
         try:
             self.logger.debug(f"website: Function successfully called with message {str(update.message.text)}")
+            if update.message.text == "no" and self.retry == True:
+                response = "Okay, what about a document? If yes, please reply with the document, if not, please respond with 'no'."
+                await update.message.reply_text(response)
+                self.logger.debug(f"website: Response message successfully sent. Message: {str(response)}")
+                return self.DOCUMENT
+
+            if update.message.text != "no" and self.retry == True:
+                response = "Okay, do you have a another link to a website? If yes, please reply with the website, if not, please respond with 'no'."
+                self.tools.append(self.addWebsite(update.message.text))
+                await update.message.reply_text(response)
+                self.logger.debug(f"website: Response message successfully sent. Message: {str(response)}")
+                return self.WEBSITE
+
             if update.message.text.lower() != "no":
                 self.tools.append(self.addWebsite(update.message.text))
                 response = "Okay, do you have another link to a website with information you want to have included? If yes, please reply with the link, if not, please just send 'no'."
                 await update.message.reply_text(response)
                 self.logger.debug(f"website: Response message successfully sent. Message: {str(response)}")
                 return self.WEBSITE
+
             response = "Great! Do you have a document with information you want to have included? If yes, please reply with the document, if not, please just send 'no'."
             await update.message.reply_text(response)
             self.logger.debug(f"website: Response message successfully sent. Message: {str(response)}")
@@ -165,9 +192,12 @@ class TelegramBot:
                         return self.DOCUMENT
                 self.logger.debug(f"document: File Mime Type: {str(document.mime_type)}")
             response = "Do you have another document you want to upload? If yes, please reply with the document, if not, please just send 'no'."
+            if self.retry:
+                response = "Do you have another document you want to upload? If yes, please reply with the document, if not, please respond with 'no'."
             await update.message.reply_text(response)
             self.logger.debug(f"document: Response message successfully sent. Message: {str(response)}")
             return self.DOCUMENT
+
         except Exception as e:
             await update.message.reply_text(f"An error occurred: {str(e)}. \nPlease resend your document or 'no'.")
             self.logger.error(f"document: An exception occurred: {str(e)}")
@@ -177,11 +207,18 @@ class TelegramBot:
         """Manages what happens when no document is sent"""
         try:
             self.logger.debug(f"no_document: Function successfully called with message {str(update.message.text)}")
+            if update.message.text == "no" and self.retry == True:
+                response = "Next, do you want to change your blog article length? If yes, please reply with the new length, if not, please respond with 'no'."
+                await update.message.reply_text(response)
+                self.logger.debug(f"no_document: Response message successfully sent. Message: {str(response)}")
+                return self.LENGTH
+
             if update.message.text.lower() != "no":
                 response = "Not valid, please respond with either a document or 'no'."
                 await update.message.reply_text(response)
                 self.logger.debug(f"no_document: Response message successfully sent. Message: {str(response)}")
                 return self.DOCUMENT
+
             response = "How long should the blog article be? (e.g. Short, Medium, Long)"
             await update.message.reply_text(response)
             self.logger.debug(f"no_document: Response message successfully sent. Message: {str(response)}")
@@ -194,7 +231,17 @@ class TelegramBot:
     async def length(self, update: Update, context: CallbackContext):
         """Saves the configured length in the user data"""
         try:
-            self.logger.debug(f"length: Function length successfully called with message {str(update.message.text)}")
+            if self.retry:
+                self.logger.debug(
+                    f"length: Function successfully called with message {str(update.message.text)}")
+                if update.message.text != "no":
+                    context.user_data['length'] = update.message.text
+                response = "Next, do you want to change your blog article language level? If yes, please reply with the new language level, if not, please respond with 'no'."
+                await update.message.reply_text(response)
+                self.logger.debug(f"length: Response message successfully sent. Message: {str(response)}")
+                return self.LANGUAGE_LEVEL
+
+            self.logger.debug(f"length: Function successfully called with message {str(update.message.text)}")
             context.user_data['length'] = update.message.text
             response = "Great! What language level should it be? (e.g. Beginner, Intermediate, Advanced)"
             await update.message.reply_text(response)
@@ -208,6 +255,16 @@ class TelegramBot:
     async def language_level(self, update: Update, context: CallbackContext):
         """Saves the configured language level in the user data"""
         try:
+            if self.retry:
+                self.logger.debug(
+                    f"language level: Function successfully called with message {str(update.message.text)}")
+                if update.message.text != "no":
+                    context.user_data['language_level'] = update.message.text
+                response = "Next, do you want to change your blog article information level? If yes, please reply with the new information level, if not, please respond with 'no'."
+                await update.message.reply_text(response)
+                self.logger.debug(f"language_level: Response message successfully sent. Message: {str(response)}")
+                return self.INFORMATION
+
             self.logger.debug(f"language_level: Function successfully called with message {str(update.message.text)}")
             context.user_data['language_level'] = update.message.text
             response = "Great! What information level should it be? (e.g. High, Intermediate, Low)"
@@ -222,6 +279,16 @@ class TelegramBot:
     async def information(self, update: Update, context: CallbackContext):
         """Saves the configured information level in the user data"""
         try:
+            if self.retry:
+                self.logger.debug(
+                    f"information: Function successfully called with message {str(update.message.text)}")
+                if update.message.text != "no":
+                    context.user_data['information'] = update.message.text
+                response = "Next, do you want to change your blog article language? If yes, please reply with the new language, if not, please respond with 'no'."
+                await update.message.reply_text(response)
+                self.logger.debug(f"information: Response message successfully sent. Message: {str(response)}")
+                return self.LANGUAGE
+
             self.logger.debug(f"information: Function successfully called with message {str(update.message.text)}")
             context.user_data['information'] = update.message.text
             response = "Great! What language should it be? (e.g. English, German, Spanish)"
@@ -236,6 +303,16 @@ class TelegramBot:
     async def language(self, update: Update, context: CallbackContext):
         """Saves the configured language in the user data"""
         try:
+            if self.retry:
+                self.logger.debug(
+                    f"language: Function successfully called with message {str(update.message.text)}")
+                if update.message.text != "no":
+                    context.user_data['language'] = update.message.text
+                response = "Next, do you want to change your blog article tone? If yes, please reply with the new tone, if not, please respond with 'no'."
+                await update.message.reply_text(response)
+                self.logger.debug(f"language: Response message successfully sent. Message: {str(response)}")
+                return self.TONE
+
             self.logger.debug(f"language: Function successfully called with message {str(update.message.text)}")
             context.user_data['language'] = update.message.text
             response = "Great! What tone should it be? (e.g. Professional, Casual, Friendly)"
@@ -250,8 +327,35 @@ class TelegramBot:
     async def tone(self, update: Update, context: CallbackContext):
         """Saves the configured tone in the user data and asks """
         try:
+            if self.retry:
+                self.logger.debug(
+                    f"tone: Function successfully called with message {str(update.message.text)}")
+                if update.message.text != "no":
+                    context.user_data['tone'] = update.message.text
+                response = "Next, do you want to change your blog additional information? If yes, please reply with the new additional information, if not, please respond with 'no'."
+                await update.message.reply_text(response)
+                self.logger.debug(f"tone: Response message successfully sent. Message: {str(response)}")
+                return self.ADDITIONAL
             self.logger.debug(f"tone: Function successfully called with message {str(update.message.text)}")
             context.user_data['tone'] = update.message.text
+            user_data = context.user_data
+            response =("Great! Now, do you have any additional information you want to have included? If not, please respond with 'no'.")
+            await update.message.reply_text(response)
+            self.logger.debug(f"tone: Response message successfully sent. Message: {str(response)}")
+            return self.ADDITIONAL
+        except Exception as e:
+            await update.message.reply_text(f"An error occurred: {str(e)}. \nPlease resend your preferred article tone.")
+            self.logger.error(f"tone: An exception occurred: {str(e)}")
+            return self.TONE
+
+    async def additional(self, update: Update, context: CallbackContext):
+        try:
+            if self.retry and update.message.text != "no":
+                    context.user_data['additional_information'] = update.message.text
+            self.logger.debug(f"additional_information: Function successfully called with message {str(update.message.text)}")
+            context.user_data['additional_information'] = ""
+            if update.message.text != "no":
+                context.user_data['additional_information'] = update.message.text
             user_data = context.user_data
             response =(f"Thanks! Here's what I got:\n"
                 f"- Length: {user_data['length']}\n"
@@ -260,14 +364,17 @@ class TelegramBot:
                 f"- Information Level: {user_data['information']}\n"
                 f"- Language: {user_data['language']}\n"
                 f"- Tone: {user_data['tone']}\n"
-                f"Type 'yes' to confirm or 'no' to restart.")
+                f"- Additional Information: {user_data['additional_information']}\n"
+                f"Type 'yes' to confirm or 'no' to restart."
+                f"\nIf you type 'no', your configuration is saved. Then, you will be asked all questions again and can just respond 'no' if you want your answer to remain the same."
+                f"\nSo, please only respond something to a question if you want to change it.")
             await update.message.reply_text(response)
-            self.logger.debug(f"tone: Response message successfully sent. Message: {str(response)}")
+            self.logger.debug(f"additional: Response message successfully sent. Message: {str(response)}")
             return self.CONFIRM
         except Exception as e:
-            await update.message.reply_text(f"An error occurred: {str(e)}. \nPlease resend your preferred article tone.")
+            await update.message.reply_text(f"An error occurred: {str(e)}. \nPlease resend your additional information.")
             self.logger.error(f"tone: An exception occurred: {str(e)}")
-            return self.TONE
+            return self.ADDITIONAL
 
     async def confirm(self, update: Update, context: CallbackContext):
         """Starts the blog article generation and returns the finished article if answer is yes, else restart the whole process"""
@@ -284,6 +391,7 @@ class TelegramBot:
                     'language_level': user_data['language_level'],
                     'tone': user_data['tone'],
                     'language': user_data['language'],
+                    'additional_information': user_data['additional_information'],
                     'history': user_data['history'],
                 }
                 self.logger.debug(f"confirm: Inputs: {str(inputs)}")
@@ -300,9 +408,10 @@ class TelegramBot:
                 context.user_data["history"].append(str(response))
                 return self.CHAT
             else:
-                await update.message.reply_text("Let's start over!")
+                await update.message.reply_text("Okay, let's reconfigure! Remember to please respond with 'no' if you want to keep your answer, so only respond if you want to change it. \n First, do you want to change you topic or task? If yes, please respond with 'topic' or 'task', if not, please respond with 'no'.")
                 self.logger.debug(f"confirm: Configuration restarted.")
-                return self.start(update, context)
+                self.retry = True
+                return self.TOPIC_OR_TASK
         except BadRequest as b:
             if b.message == "Message is too long":
                 responses = response.split("\n\n")
@@ -347,6 +456,7 @@ class TelegramBot:
                 self.LANGUAGE: [MessageHandler(filters.TEXT & ~filters.COMMAND, self.language)],
                 self.TONE: [MessageHandler(filters.TEXT & ~filters.COMMAND, self.tone)],
                 self.CONFIRM: [MessageHandler(filters.TEXT & ~filters.COMMAND, self.confirm)],
+                self.ADDITIONAL: [MessageHandler(filters.TEXT & ~filters.COMMAND, self.additional)],
             },
             fallbacks=[CommandHandler("cancel", self.cancel)],
         )
