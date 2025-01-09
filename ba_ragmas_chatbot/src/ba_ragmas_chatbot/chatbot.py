@@ -44,10 +44,16 @@ class TelegramBot:
             return self.CHAT
 
     async def clear(self, update: Update, context: CallbackContext):
-        context.user_data.clear()
-        self.logger.info(f"clear: Conversation successfully cleared.")
-        await update.message.reply_text("Conversation successfully cleared! Your conversation was restarted, so please either restart your configuration or chat with the LLM!")
-        return self.CHAT
+        """Clears the conversation and user history, and returns to chat."""
+        try:
+            context.user_data.clear()
+            self.logger.info(f"clear: Conversation successfully cleared.")
+            await update.message.reply_text("Conversation successfully cleared! Your conversation was restarted, so please either restart your configuration or chat with the LLM!")
+            return self.CHAT
+        except Exception as e:
+            await update.message.reply_text(f"An error occurred: {str(e)}. To re-clear the conversation, please send /clear again.")
+            self.logger.error(f"clear: Tried to clear conversation, but an exception occurred: {str(e)}")
+            return self.CHAT
 
     async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Send a message when the command /start is issued."""
@@ -66,10 +72,32 @@ class TelegramBot:
 
     async def start_configuration(self, update:Update, context: ContextTypes.DEFAULT_TYPE):
         """Starts the article configuration"""
-        await update.message.reply_text(
-            "Great, you want to start the blog article configuration! First, what topic should the blog article be about? Or what task should the blog article fulfil? If you have a topic please respond with 'topic', if you have a separate task please respond with 'task'.")
-        self.logger.debug("start_configuration: Blog article configuration started.")
-        return self.TOPIC_OR_TASK
+        try:
+            await update.message.reply_text(
+                "Great, you want to start the blog article configuration! First, what topic should the blog article be about? Or what task should the blog article fulfil? If you have a topic please respond with 'topic', if you have a separate task please respond with 'task'.")
+            self.logger.debug("start_configuration: Blog article configuration started.")
+            return self.TOPIC_OR_TASK
+        except Exception as e:
+            await update.message.reply_text(f"An error occurred: {str(e)}. To restart the configuration, please send /start_configuration again.")
+            self.logger.error(f"start_configuration: Tried to start configuration, but an exception occurred: {str(e)}")
+            return self.CHAT
+
+    async def help(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        try:
+            await update.message.reply_text(
+                f"Welcome to the Blog Article Generator Bot! Here's how to get started:\n"
+                f"1. /start - Restart the conversation.\n"
+                f"2. /start_configuration - Start the blog article configuration.\n"
+                f"3. /chat - Chat with a Llama LLM.\n"
+                f"4. /clear - Clear the conversation and user history.\n"
+                f"5. /cancel - End the conversation.\n"
+                f"Just type a command to get started!")
+            self.logger.debug("help: help sent.")
+            return self.CHAT
+        except Exception as e:
+            await update.message.reply_text(f"An error occurred: {str(e)}. To get help, please send /help again.")
+            self.logger.error(f"help: Tried to respond with help, but an exception occurred: {str(e)}")
+            return self.CHAT
 
     async def topic_or_task(self, update: Update, context: CallbackContext):
         """Manages if the system should write an article on a topic or if it should do a task"""
@@ -459,7 +487,7 @@ class TelegramBot:
                 self.CONFIRM: [MessageHandler(filters.TEXT & ~filters.COMMAND, self.confirm)],
                 self.ADDITIONAL: [MessageHandler(filters.TEXT & ~filters.COMMAND, self.additional)],
             },
-            fallbacks=[CommandHandler("cancel", self.cancel), CommandHandler("clear", self.clear), CommandHandler("start_configuration", self.start_configuration)],
+            fallbacks=[CommandHandler("cancel", self.cancel), CommandHandler("clear", self.clear), CommandHandler("start_configuration", self.start_configuration), CommandHandler("help", self.help), CommandHandler("chat", self.chat)],
         )
 
         application.add_handler(conv_handler)
