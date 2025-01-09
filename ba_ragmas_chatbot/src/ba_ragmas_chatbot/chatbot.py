@@ -30,6 +30,7 @@ class TelegramBot:
 
     async def chat(self, update: Update, context: CallbackContext):
         """Interaction with the second not-RAG-MAS llm when the blog article configuration is deactivated"""
+        response = ""
         try:
             self.logger.debug(f"chat: Function successfully called with message {str(update.message.text)}")
             context.user_data['history'] = context.user_data.get('history', []) + [update.message.text]
@@ -39,6 +40,12 @@ class TelegramBot:
             self.logger.debug(f"chat: Query successfully answered with {str(response)}")
             context.user_data['history'].append(str(response))
             return self.CHAT
+        except BadRequest as b:
+            if b.message == "Message is too long":
+                responses = response.split("\n\n")
+                self.logger.warn(f"confirm: Message is too long, split up into small packets by double line.")
+                for response in responses:
+                    await update.message.reply_text(response)
         except Exception as e:
             await update.message.reply_text(f"chat: An error occurred: {str(e)}")
             return self.CHAT
@@ -395,8 +402,8 @@ class TelegramBot:
                 f"- Tone: {user_data['tone']}\n"
                 f"- Additional Information: {user_data['additional_information']}\n"
                 f"Type 'yes' to confirm or 'no' to restart."
-                f"\nIf you type 'no', your configuration is saved. Then, you will be asked all questions again and can just respond 'no' if you want your answer to remain the same."
-                f"\nSo, please only respond something to a question if you want to change it.")
+                f"\n\nIf you type 'no', your configuration will be saved. Then, you will be asked all questions again and can just respond 'no' if you want your answer to remain the same."
+                f"\nSo, please only respond to a question if you want to change your answer.")
             await update.message.reply_text(response)
             self.logger.debug(f"additional: Response message successfully sent. Message: {str(response)}")
             return self.CONFIRM
