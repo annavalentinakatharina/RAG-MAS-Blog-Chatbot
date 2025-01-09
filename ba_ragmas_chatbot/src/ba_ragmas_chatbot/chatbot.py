@@ -23,14 +23,14 @@ class TelegramBot:
     with open(yaml_file, 'r') as file:
         config = yaml.safe_load(file)
     token = config['chatbot_token']['token']
-    llm_name = config['llm']['name']
-    llm_provider = config['llm']['provider_name']
-    llm_url = config['llm']['url']
-    embed_model_name = config['embedding_model']['name']
-    embed_model_provider = config['embedding_model']['provider_name']
-    embed_model_url = config['embedding_model']['url']
+    llm_name = config['chatbot']['llm']['name']
+    llm_provider = config['chatbot']['llm']['provider_name']
+    llm_url = config['chatbot']['llm']['url']
+    embed_model_name = config['chatbot']['embedding_model']['name']
+    embed_model_provider = config['chatbot']['embedding_model']['provider_name']
+    embed_model_url = config['chatbot']['embedding_model']['url']
     tools = []
-    ai = OllamaLLM(model="llama3.1:8b-instruct-q8_0")
+    ai = OllamaLLM(model=llm_name)
     logger = logger_config.get_logger('telegram bot')
     retry = False
 

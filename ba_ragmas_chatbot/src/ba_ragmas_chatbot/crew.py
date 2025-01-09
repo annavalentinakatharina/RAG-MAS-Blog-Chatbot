@@ -1,3 +1,6 @@
+import os
+
+import yaml
 from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task, before_kickoff, after_kickoff
 
@@ -22,15 +25,23 @@ class BaRagmasChatbot():
 	agents_config = 'config/agents.yaml'
 	tasks_config = 'config/tasks.yaml'
 	tools = []
+	current_dir = os.path.dirname(os.path.abspath(__file__))
+	yaml_file = os.path.join(current_dir, "config", "configs.yaml")
+	with open(yaml_file, 'r') as file:
+		config = yaml.safe_load(file)
+	llm= config['agents']['llm']
+	url= config['agents']['url']
 
 	@before_kickoff
 	def before_kickoff_function(self, inputs):
+		"""What happens before the crew is started"""
 		print(f"Before kickoff function with inputs: {inputs}")
 		self.logger.info(f"before_kickoff_function: Called with inputs: {inputs}")
 		return inputs
 
 	@after_kickoff
 	def after_kickoff_function(self, result):
+		"""What happens after the crew is finished"""
 		print(f"After kickoff function with result: {result}")
 		self.logger.info(f"after_kickoff_function: Called with result: {result}")
 		return result
@@ -41,7 +52,7 @@ class BaRagmasChatbot():
 		self.logger.info("researcher: Researcher Agent created based on agents.yaml[researcher] with llm ollama/llama3.1:8b-instruct-q8_0.")
 		return Agent(
 			config=self.agents_config['researcher'],
-			llm=LLM(model="ollama/llama3.1:8b-instruct-q8_0", base_url="http://localhost:11434"),
+			llm=LLM(model=self.llm, base_url=self.url),
 			tools = self.tools,
 			verbose=True
 		)
@@ -52,7 +63,7 @@ class BaRagmasChatbot():
 		self.logger.info("editor: Editor Agent created based on agents.yaml[editor] with llm ollama/llama3.1:8b-instruct-q8_0.")
 		return Agent(
 			config=self.agents_config['editor'],
-			llm=LLM(model="ollama/llama3.1:8b-instruct-q8_0", base_url="http://localhost:11434"),
+			llm=LLM(model=self.llm, base_url=self.url),
 			verbose=True
 		)
 
@@ -62,7 +73,7 @@ class BaRagmasChatbot():
 		self.logger.info("writer: Writer Agent created based on agents.yaml[writer] with llm ollama/llama3.1:8b-instruct-q8_0.")
 		return Agent(
 			config=self.agents_config['writer'],
-			llm=LLM(model="ollama/llama3.1:8b-instruct-q8_0", base_url="http://localhost:11434"),
+			llm=LLM(model=self.llm, base_url=self.url),
 			verbose=True
 		)
 
@@ -72,7 +83,7 @@ class BaRagmasChatbot():
 		self.logger.info("proofreader: Proofreader Agent created based on agents.yaml[proofreader] with llm ollama/llama3.1:8b-instruct-q8_0.")
 		return Agent(
 			config=self.agents_config['proofreader'],
-			llm=LLM(model="ollama/llama3.1:8b-instruct-q8_0", base_url="http://localhost:11434"),
+			llm=LLM(model=self.llm, base_url=self.url),
 			verbose=True
 		)
 
@@ -136,5 +147,4 @@ class BaRagmasChatbot():
 			tasks=self.tasks,
 			process=Process.sequential,
 			verbose=True,
-			# process=Process.hierarchical, # In case you wanna use that instead https://docs.crewai.com/how-to/Hierarchical/
 		)
