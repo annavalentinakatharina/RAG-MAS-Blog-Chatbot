@@ -46,6 +46,7 @@ class TelegramBot:
             self.logger.debug(f"chat: Query successfully answered with {str(response)}")
             context.user_data['history'].append(str(response))
             return self.CHAT
+
         except BadRequest as b:
             if b.message == "Message is too long":
                 responses = response.split("\n\n")
@@ -53,6 +54,7 @@ class TelegramBot:
                 for response in responses:
                     await update.message.reply_text(response)
             return self.CHAT
+
         except Exception as e:
             await update.message.reply_text(f"chat: An error occurred: {str(e)}")
             return self.CHAT
@@ -65,6 +67,7 @@ class TelegramBot:
             self.logger.info(f"clear: Conversation successfully cleared.")
             await update.message.reply_text("Conversation successfully cleared! Your conversation was restarted, so please either restart your configuration or chat with the LLM!")
             return self.CHAT
+
         except Exception as e:
             await update.message.reply_text(f"An error occurred: {str(e)}. To re-clear the conversation, please send /clear again.")
             self.logger.error(f"clear: Tried to clear conversation, but an exception occurred: {str(e)}")
@@ -80,6 +83,7 @@ class TelegramBot:
             context.user_data['history'] = []
             self.logger.debug(f"start: Response message successfully sent. Message: {str(response)}")
             return self.CHAT
+
         except Exception as e:
             await update.message.reply_text(f"An error occurred: {str(e)}")
             self.logger.error(f"start: Tried to start conversation, but an exception occurred: {str(e)}")
@@ -92,6 +96,7 @@ class TelegramBot:
                 "Great, you want to start the blog article configuration! First, what topic should the blog article be about? Or what task should the blog article fulfil? If you have a topic please respond with 'topic', if you have a separate task please respond with 'task'.")
             self.logger.debug("start_configuration: Blog article configuration started.")
             return self.TOPIC_OR_TASK
+
         except Exception as e:
             await update.message.reply_text(f"An error occurred: {str(e)}. To restart the configuration, please send /start_configuration again.")
             self.logger.error(f"start_configuration: Tried to start configuration, but an exception occurred: {str(e)}")
@@ -109,6 +114,7 @@ class TelegramBot:
                 f"Just type a command to get started!")
             self.logger.debug("help: help sent.")
             return self.CHAT
+
         except Exception as e:
             await update.message.reply_text(f"An error occurred: {str(e)}. To get help, please send /help again.")
             self.logger.error(f"help: Tried to respond with help, but an exception occurred: {str(e)}")
@@ -123,21 +129,25 @@ class TelegramBot:
                 await update.message.reply_text(response)
                 self.logger.debug(f"topic_or_task: Response message successfully sent. Message: {str(response)}")
                 return self.TOPIC
+
             if update.message.text == "task":
                 response = "Okay, task it is! What task should the blog article fulfil?"
                 await update.message.reply_text(response)
                 self.logger.debug(f"topic_or_task: Response message successfully sent. Message: {str(response)}")
                 return self.TASK
+
             if update.message.text == "no":
                 response = f"Okay, you want to keep your topic or task! Next, do you want to add another link to a website? If yes, please respond with the new link, if not, please respond with 'no'."
                 await update.message.reply_text(response)
                 self.logger.debug(f"topic_or_task: Reconfiguration response successfully sent. Message: {str(response)}")
                 return self.WEBSITE
+
             else:
                 response = "Not valid, please respond with either 'topic' or 'task'."
                 await update.message.reply_text(response)
                 self.logger.debug(f"topic_or_task: Response message successfully sent. Message: {str(response)}")
                 return self.TOPIC_OR_TASK
+
         except Exception as e:
             await update.message.reply_text(f"An error occurred: {str(e)}. \nPlease answer with 'topic' or 'task' again.")
             self.logger.error(f"topic_or_task: An exception occurred: {str(e)}")
@@ -152,6 +162,7 @@ class TelegramBot:
             await update.message.reply_text(response)
             self.logger.debug(f"topic: Response message successfully sent. Message: {str(response)}")
             return self.WEBSITE
+
         except Exception as e:
             await update.message.reply_text(f"An error occurred: {str(e)}. \nPlease resend your topic.")
             self.logger.error(f"topic: An exception occurred: {str(e)}")
@@ -166,6 +177,7 @@ class TelegramBot:
             await update.message.reply_text(response)
             self.logger.debug(f"task: Response message successfully sent. Message: {str(response)}")
             return self.WEBSITE
+
         except Exception as e:
             await update.message.reply_text(f"An error occurred: {str(e)}. \nPlease resend your task.")
             self.logger.error(f"task: An exception occurred: {str(e)}")
@@ -199,6 +211,7 @@ class TelegramBot:
             await update.message.reply_text(response)
             self.logger.debug(f"website: Response message successfully sent. Message: {str(response)}")
             return self.DOCUMENT
+
         except Exception as e:
             await update.message.reply_text(f"An error occurred: {str(e)}. \nPlease resend your link or 'no'.")
             self.logger.error(f"website: An exception occurred: {str(e)}")
@@ -212,10 +225,11 @@ class TelegramBot:
             file_path = ""
             if document:
                 if document.mime_type not in self.VALID_MIME_TYPES:
-                        await update.message.reply_text(
-                            f"Unsupported file type: {document.mime_type}. \nPlease upload a valid document (PDF, Word, TXT)."
-                        )
-                        return
+                    await update.message.reply_text(
+                        f"Unsupported file type: {document.mime_type}. \nPlease upload a valid document (PDF, Word, TXT)."
+                    )
+                    return self.DOCUMENT
+
                 base_dir = os.path.dirname(__file__)
                 file_path = os.path.join(base_dir, "documents", document.file_name)
                 self.logger.debug(f"document: File saved at: {str(file_path)}")
@@ -223,6 +237,7 @@ class TelegramBot:
                 self.logger.debug(f"document: File_id: {str(file_id)}")
                 file = await context.bot.get_file(file_id)
                 await file.download_to_drive(file_path)
+
                 match document.mime_type:
                     case "application/pdf":
                         self.addPDF(file_path)
@@ -234,6 +249,7 @@ class TelegramBot:
                         await update.message.reply_text("Invalid file type, only acceptable file endings are: PDF, TXT and DOXC. Please convert and send your document again.")
                         self.logger.warn(f"document: Invalid file type sent: {str(document.mime_type)}")
                         return self.DOCUMENT
+
                 self.logger.debug(f"document: File Mime Type: {str(document.mime_type)}")
             response = "Do you have another document you want to upload? If yes, please reply with the document, if not, please just send 'no'."
             if self.retry:
@@ -267,6 +283,7 @@ class TelegramBot:
             await update.message.reply_text(response)
             self.logger.debug(f"no_document: Response message successfully sent. Message: {str(response)}")
             return self.LENGTH
+
         except Exception as e:
             await update.message.reply_text(f"An error occurred: {str(e)}. \nPlease resend your document or 'no'.")
             self.logger.error(f"no_document: An exception occurred: {str(e)}")
@@ -291,6 +308,7 @@ class TelegramBot:
             await update.message.reply_text(response)
             self.logger.debug(f"length: Response message successfully sent. Message: {str(response)}")
             return self.LANGUAGE_LEVEL
+
         except Exception as e:
             await update.message.reply_text(f"An error occurred: {str(e)}. \nPlease resend your preferred article length.")
             self.logger.error(f"length: An exception occurred: {str(e)}")
@@ -315,6 +333,7 @@ class TelegramBot:
             await update.message.reply_text(response)
             self.logger.debug(f"language_level: Response message successfully sent. Message: {str(response)}")
             return self.INFORMATION
+
         except Exception as e:
             await update.message.reply_text(f"An error occurred: {str(e)}. \nPlease resend your preferred article language level.")
             self.logger.error(f"language_level: An exception occurred: {str(e)}")
@@ -339,6 +358,7 @@ class TelegramBot:
             await update.message.reply_text(response)
             self.logger.debug(f"information: Response message successfully sent. Message: {str(response)}")
             return self.LANGUAGE
+
         except Exception as e:
             await update.message.reply_text(f"An error occurred: {str(e)}. \nPlease resend your preferred article information level.")
             self.logger.error(f"information: An exception occurred: {str(e)}")
@@ -363,6 +383,7 @@ class TelegramBot:
             await update.message.reply_text(response)
             self.logger.debug(f"language: Response message successfully sent. Message: {str(response)}")
             return self.TONE
+
         except Exception as e:
             await update.message.reply_text(f"An error occurred: {str(e)}. \nPlease resend your preferred article language.")
             self.logger.error(f"language: An exception occurred: {str(e)}")
@@ -380,6 +401,7 @@ class TelegramBot:
                 await update.message.reply_text(response)
                 self.logger.debug(f"tone: Response message successfully sent. Message: {str(response)}")
                 return self.ADDITIONAL
+
             self.logger.debug(f"tone: Function successfully called with message {str(update.message.text)}")
             context.user_data['tone'] = update.message.text
             user_data = context.user_data
@@ -387,6 +409,7 @@ class TelegramBot:
             await update.message.reply_text(response)
             self.logger.debug(f"tone: Response message successfully sent. Message: {str(response)}")
             return self.ADDITIONAL
+
         except Exception as e:
             await update.message.reply_text(f"An error occurred: {str(e)}. \nPlease resend your preferred article tone.")
             self.logger.error(f"tone: An exception occurred: {str(e)}")
@@ -400,6 +423,7 @@ class TelegramBot:
             context.user_data['additional_information'] = ""
             if update.message.text != "no":
                 context.user_data['additional_information'] = update.message.text
+
             user_data = context.user_data
             response =(f"Thanks! Here's what I got:\n"
                 f"- Length: {user_data['length']}\n"
@@ -415,6 +439,7 @@ class TelegramBot:
             await update.message.reply_text(response)
             self.logger.debug(f"additional: Response message successfully sent. Message: {str(response)}")
             return self.CONFIRM
+
         except Exception as e:
             await update.message.reply_text(f"An error occurred: {str(e)}. \nPlease resend your additional information.")
             self.logger.error(f"tone: An exception occurred: {str(e)}")
@@ -441,27 +466,33 @@ class TelegramBot:
                 self.logger.debug(f"confirm: Inputs: {str(inputs)}")
                 context.user_data['history'] = context.user_data.get('history', []) + [str(inputs)]
                 history = "\n".join(context.user_data['history'])
+
                 filtered_tools = [tool for tool in self.tools if tool is not None]
                 self.logger.debug(f"confirm: Tools registered: {str(filtered_tools)}")
                 bot = BaRagmasChatbot(filtered_tools)
                 self.logger.debug(f"confirm: BaRagmasChatbot started.")
+                await update.message.reply_text("Processing...")
+
                 response = str(bot.crew().kickoff(inputs=inputs))
                 self.logger.debug(f"confirm: Crew kicked off and response successfully created.")
                 await update.message.reply_text(response)
                 self.logger.debug(f"confirm: Response message successfully sent. Message: {str(response)}")
                 context.user_data["history"].append(str(response))
                 return self.CHAT
+
             else:
                 await update.message.reply_text("Okay, let's reconfigure! Remember to please respond with 'no' if you want to keep your answer, so only respond if you want to change it. \n First, do you want to change you topic or task? If yes, please respond with 'topic' or 'task', if not, please respond with 'no'.")
                 self.logger.debug(f"confirm: Configuration restarted.")
                 self.retry = True
                 return self.TOPIC_OR_TASK
+
         except BadRequest as b:
             if b.message == "Message is too long":
                 responses = response.split("\n\n")
                 self.logger.warn(f"confirm: Message is too long, split up into small packets by double line.")
                 for response in responses:
                     await update.message.reply_text(response)
+
         except Exception as e:
             await update.message.reply_text(f"An error occurred: {str(e)}. \nPlease resend if you want to confirm the inputs or not.")
             self.logger.error(f"confirm: An exception occurred:{str(e)}")
@@ -475,6 +506,7 @@ class TelegramBot:
             await update.message.reply_text(response)
             self.logger.debug(f"cancel: Response message successfully sent. Message: {str(response)}")
             return ConversationHandler.END
+
         except Exception as e:
             await update.message.reply_text(f"An error occurred: {str(e)}. \nConversation canceled. Type /start to begin again.")
             self.logger.error(f"cancel: An exception occurred: {str(e)}")
