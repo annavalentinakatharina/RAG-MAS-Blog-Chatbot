@@ -5,11 +5,7 @@ from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task, before_kickoff, after_kickoff
 
 from src.ba_ragmas_chatbot import logger_config
-
-
-# If you want to run a snippet of code before or after the crew starts,
-# you can use the @before_kickoff and @after_kickoff decorators
-# https://docs.crewai.com/concepts/crews#example-crew-class-with-decorators
+from src.ba_ragmas_chatbot.tools.factcheck_tool import FactCheckTool
 
 @CrewBase
 class BaRagmasChatbot():
@@ -19,12 +15,9 @@ class BaRagmasChatbot():
 		self.tools = tools
 		self.logger = logger_config.get_logger("crew ai")
 
-	# Learn more about YAML configuration files here:
-	# Agents: https://docs.crewai.com/concepts/agents#yaml-configuration-recommended
-	# Tasks: https://docs.crewai.com/concepts/tasks#yaml-configuration-recommended
 	agents_config = 'config/agents.yaml'
 	tasks_config = 'config/tasks.yaml'
-	tools = []
+	tools = [FactCheckTool()]
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	yaml_file = os.path.join(current_dir, "config", "configs.yaml")
 	with open(yaml_file, 'r') as file:
@@ -65,6 +58,7 @@ class BaRagmasChatbot():
 		return Agent(
 			config=self.agents_config['editor'],
 			llm=LLM(model=self.llm, base_url=self.url),
+			tools=self.tools,
 			max_retry_limit=2,
 			verbose=True
 		)
@@ -76,6 +70,7 @@ class BaRagmasChatbot():
 		return Agent(
 			config=self.agents_config['writer'],
 			llm=LLM(model=self.llm, base_url=self.url),
+			tools=self.tools,
 			max_retry_limit=2,
 			verbose=True
 		)
@@ -87,20 +82,10 @@ class BaRagmasChatbot():
 		return Agent(
 			config=self.agents_config['proofreader'],
 			llm=LLM(model=self.llm, base_url=self.url),
+			tools = self.tools,
 			max_retry_limit=2,
 			verbose=True
 		)
-
-	# @agent
-	# def factchecker(self) -> Agent:
-	#"""The factchecker agent which corresponds to the factchecker specified in the agents.yaml."""
-	#	self.logger.info("factchecker: Factchecker Agent created based on agents.yaml[factchecker] with llm ollama/llama3.1:8b-instruct-q8_0.")
-	# 	return Agent(
-	# 		config=self.agents_config['factchecker'],
-	# 		llm=LLM(model="ollama/llama3.1:8b-instruct-q8_0", base_url="http://localhost:11434"),
-	# 		#tools=self.tools,
-	# 		verbose=True
-	# 	)
 
 	@task
 	def research_task(self) -> Task:
@@ -108,6 +93,7 @@ class BaRagmasChatbot():
 		self.logger.info("research_task: Research task created based on tasks.yaml[research_task].")
 		return Task(
 			config=self.tasks_config['research_task'],
+			tools=self.tools,
 		)
 
 	@task
@@ -116,6 +102,7 @@ class BaRagmasChatbot():
 		self.logger.info("editor_task: Editor task created based on tasks.yaml[editor_task].")
 		return Task(
 			config=self.tasks_config['editor_task'],
+			tools=self.tools,
 		)
 
 	@task
@@ -124,6 +111,7 @@ class BaRagmasChatbot():
 		self.logger.info("writer_task: Writer task created based on tasks.yaml[writer_task].")
 		return Task(
 			config=self.tasks_config['writer_task'],
+			tools=self.tools,
 		)
 
 	@task
@@ -132,15 +120,8 @@ class BaRagmasChatbot():
 		self.logger.info("proofreader_task: Proofreader task created based on tasks.yaml[proofreader_task].")
 		return Task(
 			config=self.tasks_config['proofreader_task'],
+			tools=self.tools,
 		)
-
-	# @task
-	# def factchecker_task(self) -> Task:
-	#	"""The factchecker task which corresponds to the factchecker task specified in the tasks.yaml."""
-	#	self.logger.info("factchecker_task: Factchecker task created based on tasks.yaml[factchecker_task].")
-	# 	return Task(
-	# 		config=self.tasks_config['factchecker_task'],
-	# 	)
 
 	@crew
 	def crew(self) -> Crew:

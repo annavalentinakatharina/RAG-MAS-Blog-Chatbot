@@ -41,6 +41,7 @@ proofreader_task:
   description: >
     Proofread, factcheck and grammatically improve a blog article about {topic}.
     Make sure to check the grammar, spelling and generally the writing of the given article, but without changing its meaning in any way.
+    If a numerical fact is mentioned, check it with the tool.
     Word Count Target: {length}
     Information Depth: {information_level}
     Reader Skill Level: {language_level}
@@ -51,18 +52,3 @@ proofreader_task:
   expected_output: >
     An improved blog article about {topic}
   agent: proofreader
-
-#factchecker_task:
-#  description: >
-#    Fact-heck the facts mentioned in a blog article about a {topic}.
-#    Make sure to cover all pieces of information in the given article, and make sure that everything in it is true.
-#    Return the article that includes only fact-checked data.
-#    Length of Article: {length}
-#    Amount of information: {information_level}
-#    Level of language: {language_level}
-#    Tone: {tone}
-#    Language: {language}
-#  expected_output: >
-#    An improved blog article about {topic}
-#  agent: factchecker
-

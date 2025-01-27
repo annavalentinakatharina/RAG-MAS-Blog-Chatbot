@@ -105,7 +105,7 @@ class TelegramBot:
     async def help(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         try:
             await update.message.reply_text(
-                f"Welcome to the Blog Article Generator Bot! Here's how to get started:\n"
+                f"Welcome to the RAG-MAS-Blog-Article-Generator Bot! Here's how to get started:\n"
                 f"1. /start - Restart the conversation.\n"
                 f"2. /start_configuration - Start the blog article configuration.\n"
                 f"3. /chat - Chat with a Llama LLM.\n"
@@ -136,7 +136,8 @@ class TelegramBot:
                 self.logger.debug(f"topic_or_task: Response message successfully sent. Message: {str(response)}")
                 return self.TASK
 
-            if update.message.text == "no":
+            if update.message.text == "no" and self.retry == True:
+                # a second route for when the user wants to reconfigure their data
                 response = f"Okay, you want to keep your topic or task! Next, do you want to add another link to a website? If yes, please respond with the new link, if not, please respond with 'no'."
                 await update.message.reply_text(response)
                 self.logger.debug(f"topic_or_task: Reconfiguration response successfully sent. Message: {str(response)}")
@@ -188,12 +189,14 @@ class TelegramBot:
         try:
             self.logger.debug(f"website: Function successfully called with message {str(update.message.text)}")
             if update.message.text == "no" and self.retry == True:
+                # a second route for when the user wants to reconfigure their data
                 response = "Okay, what about a document? If yes, please reply with the document, if not, please respond with 'no'."
                 await update.message.reply_text(response)
                 self.logger.debug(f"website: Response message successfully sent. Message: {str(response)}")
                 return self.DOCUMENT
 
             if update.message.text != "no" and self.retry == True:
+                # a second route for when the user wants to reconfigure their data
                 response = "Okay, do you have a another link to a website? If yes, please reply with the website, if not, please respond with 'no'."
                 self.tools.append(self.addWebsite(update.message.text))
                 await update.message.reply_text(response)
@@ -253,6 +256,7 @@ class TelegramBot:
                 self.logger.debug(f"document: File Mime Type: {str(document.mime_type)}")
             response = "Do you have another document you want to upload? If yes, please reply with the document, if not, please just send 'no'."
             if self.retry:
+                # a second route for when the user wants to reconfigure their data
                 response = "Do you have another document you want to upload? If yes, please reply with the document, if not, please respond with 'no'."
             await update.message.reply_text(response)
             self.logger.debug(f"document: Response message successfully sent. Message: {str(response)}")
@@ -268,6 +272,7 @@ class TelegramBot:
         try:
             self.logger.debug(f"no_document: Function successfully called with message {str(update.message.text)}")
             if update.message.text == "no" and self.retry == True:
+                # a second route for when the user wants to reconfigure their data
                 response = "Next, do you want to change your blog article length? If yes, please reply with the new length, if not, please respond with 'no'."
                 await update.message.reply_text(response)
                 self.logger.debug(f"no_document: Response message successfully sent. Message: {str(response)}")
@@ -293,6 +298,7 @@ class TelegramBot:
         """Saves the configured length in the user data"""
         try:
             if self.retry:
+                #a second route for when the user wants to reconfigure their data
                 self.logger.debug(
                     f"length: Function successfully called with message {str(update.message.text)}")
                 if update.message.text != "no":
@@ -318,6 +324,7 @@ class TelegramBot:
         """Saves the configured language level in the user data"""
         try:
             if self.retry:
+                # a second route for when the user wants to reconfigure their data
                 self.logger.debug(
                     f"language level: Function successfully called with message {str(update.message.text)}")
                 if update.message.text != "no":
@@ -343,6 +350,7 @@ class TelegramBot:
         """Saves the configured information level in the user data"""
         try:
             if self.retry:
+                # a second route for when the user wants to reconfigure their data
                 self.logger.debug(
                     f"information: Function successfully called with message {str(update.message.text)}")
                 if update.message.text != "no":
@@ -368,6 +376,7 @@ class TelegramBot:
         """Saves the configured language in the user data"""
         try:
             if self.retry:
+                # a second route for when the user wants to reconfigure their data
                 self.logger.debug(
                     f"language: Function successfully called with message {str(update.message.text)}")
                 if update.message.text != "no":
@@ -393,6 +402,7 @@ class TelegramBot:
         """Saves the configured tone in the user data and asks """
         try:
             if self.retry:
+                # a second route for when the user wants to reconfigure their data
                 self.logger.debug(
                     f"tone: Function successfully called with message {str(update.message.text)}")
                 if update.message.text != "no":
@@ -404,7 +414,6 @@ class TelegramBot:
 
             self.logger.debug(f"tone: Function successfully called with message {str(update.message.text)}")
             context.user_data['tone'] = update.message.text
-            user_data = context.user_data
             response =("Great! Now, do you have any additional information you want to have included? If not, please respond with 'no'.")
             await update.message.reply_text(response)
             self.logger.debug(f"tone: Response message successfully sent. Message: {str(response)}")
@@ -417,6 +426,7 @@ class TelegramBot:
 
     async def additional(self, update: Update, context: CallbackContext):
         try:
+            # a second route for when the user wants to reconfigure their data
             if self.retry and update.message.text != "no":
                     context.user_data['additional_information'] = update.message.text
             self.logger.debug(f"additional_information: Function successfully called with message {str(update.message.text)}")
@@ -427,7 +437,7 @@ class TelegramBot:
             user_data = context.user_data
             response =(f"Thanks! Here's what I got:\n"
                 f"- Length: {user_data['length']}\n"
-                f"- Topic or Task: {user_data['topic']}\n"
+                f"- Topic or Tatsk: {user_data['topic']}\n"
                 f"- Language Level: {user_data['language_level']}\n"
                 f"- Information Level: {user_data['information']}\n"
                 f"- Language: {user_data['language']}\n"
@@ -534,7 +544,12 @@ class TelegramBot:
                 self.CONFIRM: [MessageHandler(filters.TEXT & ~filters.COMMAND, self.confirm)],
                 self.ADDITIONAL: [MessageHandler(filters.TEXT & ~filters.COMMAND, self.additional)],
             },
-            fallbacks=[CommandHandler("cancel", self.cancel), CommandHandler("clear", self.clear), CommandHandler("start_configuration", self.start_configuration), CommandHandler("help", self.help), CommandHandler("chat", self.chat)],
+            fallbacks=[CommandHandler("cancel", self.cancel),
+                       CommandHandler("clear", self.clear),
+                       CommandHandler("start_configuration", self.start_configuration),
+                       CommandHandler("help", self.help),
+                       CommandHandler("chat", self.chat)
+                       ],
         )
 
         application.add_handler(conv_handler)

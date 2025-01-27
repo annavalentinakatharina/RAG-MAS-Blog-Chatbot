@@ -21,7 +21,7 @@ async def test_chat_startConfiguration():
     bot = TelegramBot()
 
     #act
-    result = await bot.chat(mock_update, mock_context)
+    result = await bot.start_configuration(mock_update, mock_context)
 
     mock_message.reply_text.assert_called_once_with(
         "Great, you want to start the blog article configuration! First, what topic should the blog article be about? Or what task should the blog article fulfil? If you have a topic please respond with 'topic', if you have a separate task please respond with 'task'."
@@ -396,7 +396,7 @@ async def test_documents_document():
     #act
     result = await bot.document(mock_update, mock_context)
     mock_file.download_to_drive.assert_called_once_with(
-        '/Users/avkh/Desktop/Studium/Bachelorarbeit/Git/RAG-MAS-Blog-Chatbot/ba_ragmas_chatbot/src/ba_ragmas_chatbot/documents/RAG_PDF.pdf'
+        '/Users/avkh/Desktop/Studium/Bachelorarbeit/Git/RAG-MAS-Blog-Chatbot/src/ba_ragmas_chatbot/documents/RAG_PDF.pdf'
     )
 
     mock_file.download_to_drive.assert_called_once_with(test_file_path)
@@ -595,7 +595,7 @@ async def test_tone():
     result = await bot.tone(mock_update, mock_context)
 
     #assert
-    assert result == 11
+    assert result == 12
 
 @pytest.mark.asyncio
 async def test_tone_throw_error():
