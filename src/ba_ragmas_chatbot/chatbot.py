@@ -437,7 +437,7 @@ class TelegramBot:
             user_data = context.user_data
             response =(f"Thanks! Here's what I got:\n"
                 f"- Length: {user_data['length']}\n"
-                f"- Topic or Tatsk: {user_data['topic']}\n"
+                f"- Topic or Task: {user_data['topic']}\n"
                 f"- Language Level: {user_data['language_level']}\n"
                 f"- Information Level: {user_data['information']}\n"
                 f"- Language: {user_data['language']}\n"
