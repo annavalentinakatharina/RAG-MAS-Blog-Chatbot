@@ -10,20 +10,19 @@ from src.ba_ragmas_chatbot.tools.factcheck_tool import FactCheckTool
 @CrewBase
 class BaRagmasChatbot():
 	"""BaRagmasChatbot crew"""
-
-	def __init__(self, tools):
-		self.tools = tools
-		self.logger = logger_config.get_logger("crew ai")
-
 	agents_config = 'config/agents.yaml'
 	tasks_config = 'config/tasks.yaml'
-	tools = [FactCheckTool()]
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	yaml_file = os.path.join(current_dir, "config", "configs.yaml")
 	with open(yaml_file, 'r') as file:
 		config = yaml.safe_load(file)
 	llm= config['agents']['llm']
 	url= config['agents']['url']
+
+	def __init__(self, tools):
+		self.tools = tools
+		self.tools.append(FactCheckTool())
+		self.logger = logger_config.get_logger("crew ai")
 
 	@before_kickoff
 	def before_kickoff_function(self, inputs):
@@ -82,7 +81,6 @@ class BaRagmasChatbot():
 		return Agent(
 			config=self.agents_config['proofreader'],
 			llm=LLM(model=self.llm, base_url=self.url),
-			tools = self.tools,
 			max_retry_limit=2,
 			verbose=True
 		)
@@ -120,7 +118,6 @@ class BaRagmasChatbot():
 		self.logger.info("proofreader_task: Proofreader task created based on tasks.yaml[proofreader_task].")
 		return Task(
 			config=self.tasks_config['proofreader_task'],
-			tools=self.tools,
 		)
 
 	@crew

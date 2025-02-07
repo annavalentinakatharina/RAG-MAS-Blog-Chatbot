@@ -1,4 +1,7 @@
 import os
+import shutil
+
+import chromadb
 import yaml
 
 from crewai_tools.tools import DOCXSearchTool, PDFSearchTool, TXTSearchTool, WebsiteSearchTool
@@ -34,6 +37,13 @@ class TelegramBot:
     logger = logger_config.get_logger('telegram bot')
     retry = False
 
+    def clear_db(self):
+        """Deletes all database files related to ChromaDB."""
+        db_folder = "./db"
+        if os.path.exists(db_folder):
+            shutil.rmtree(db_folder)
+            os.makedirs(db_folder)
+
     async def chat(self, update: Update, context: CallbackContext):
         """Interaction with the second not-RAG-MAS llm when the blog article configuration is deactivated"""
         response = ""
@@ -64,6 +74,8 @@ class TelegramBot:
         try:
             context.user_data.clear()
             context.user_data['history'] = []
+            self.clear_db()
+            self.tools = []
             self.logger.info(f"clear: Conversation successfully cleared.")
             await update.message.reply_text("Conversation successfully cleared! Your conversation was restarted, so please either restart your configuration or chat with the LLM!")
             return self.CHAT
@@ -526,7 +538,7 @@ class TelegramBot:
         """Start the bot."""
         application = Application.builder().token(self.token).build()
         self.logger.info("Telegram Bot successfully started.")
-
+        self.clear_db()
         conv_handler = ConversationHandler(
             entry_points=[CommandHandler("start", self.start)],
             states={

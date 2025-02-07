@@ -1,6 +1,6 @@
 research_task:
   description: >
-    Conduct a thorough research about {topic}, using mainly the resources given to you via the tools, only reverting to other sources if completely necessary.
+    Conduct a thorough research about {topic}, using mainly the resources given to you via the tools.
     Make sure you find any interesting and relevant information given
     the current year is 2025.
   expected_output: >
@@ -24,7 +24,7 @@ editor_task:
 
 writer_task:
   description: >
-    Write a blog article about {topic}.
+    Write a blog article about {topic} using the list of bullet points provided.
     Use the list of paragraph topics provided, and base each paragraph on the topic given.
     Word Count Target: {length}
     Information Depth: {information_level}
@@ -39,8 +39,7 @@ writer_task:
 
 proofreader_task:
   description: >
-    Proofread, factcheck and grammatically improve a blog article about {topic}.
-    Make sure to check the grammar, spelling and generally the writing of the given article, but without changing its meaning in any way.
+    Proofread and factcheck the received blog article about {topic}.
     If a numerical fact is mentioned, check it with the tool.
     Word Count Target: {length}
     Information Depth: {information_level}
@@ -50,5 +49,5 @@ proofreader_task:
     Extra Notes: {additional_information}
     Context History: {history}
   expected_output: >
-    An improved blog article about {topic}
+    The received blog article about {topic}
   agent: proofreader
