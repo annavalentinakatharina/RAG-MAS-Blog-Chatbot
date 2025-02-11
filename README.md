@@ -4,6 +4,7 @@ Welcome to the BaRagmasChatbot bachelor thesis project! The goal of this project
 For the Multi-Agent System and RAG, it uses the framework [crewAI](https://crewai.com) and as a user interface, the [python-telegram-bot](https://python-telegram-bot.org).
 
 ## Installation
+This is a tutorial for running it on a Mac. If you are using it on a Windows, please adjust the commands accordingly.  
 
 Prerequisites:
 - Python >=3.10 <=3.13
@@ -21,27 +22,30 @@ cd RAG-MAS-Blog-Chatbot
 Secondly, create your .venv and activate it:
 
 ```bash
-python -m venv venv
-source venv/bin/activate
-```
-
-Thirdly, if you haven't already, install uv:
-
-```bash
-pip install uv
+python3 -m venv .venv
+source .venv/bin/activate
 ```
 
 Next, navigate to your project directory and install the dependencies:
 ```bash
 pip install -r requirements.txt
 ```
-
-The next step is downloading the ollama model and the embedding model (If you want to use a different model, go to *How to change your model*)
+Now, download the ollama cli tool and run it: 
 ```bash
-ollama pull llama-3.1:8B-instruct-q8_0
+brew install ollama
 ```
 ```bash
-ollama pull mxbai-embed-large
+ollama serve &
+```
+The next step is downloading the ollama model and the embedding model (If you want to use a different model, go to *How to change your model*)
+```bash
+ollama run llama3.1:8b-instruct-q8_0
+```
+```bash
+/bye
+```
+```bash
+ollama run mxbai-embed-large
 ```
 
 ### Basic Customizing

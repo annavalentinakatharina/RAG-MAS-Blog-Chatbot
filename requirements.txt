@@ -14,7 +14,6 @@ asttokens
 async-lru
 attrs
 auth0-python
-ba_ragmas_chatbot
 babel
 backoff
 bcrypt

@@ -9,7 +9,7 @@ from duckduckgo_api_haystack import DuckduckgoApiWebSearch
 import ollama
 
 class FactCheckToolInput(BaseModel):
-    """Input schema for MyCustomTool."""
+    """Input schema for FactCheckTool."""
     argument: str = Field(..., description="The fact that can be true or false.")
 
 class FactCheckTool(BaseTool):
