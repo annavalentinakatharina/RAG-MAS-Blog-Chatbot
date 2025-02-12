@@ -30,7 +30,7 @@ Next, navigate to your project directory and install the dependencies:
 ```bash
 pip install -r requirements.txt
 ```
-Now, download the ollama cli tool and run it: 
+Now, download the ollama cli tool and run it. After running serve, wait a few seconds and then press enter: 
 ```bash
 brew install ollama
 ```
@@ -39,13 +39,10 @@ ollama serve &
 ```
 The next step is downloading the ollama model and the embedding model (If you want to use a different model, go to *How to change your model*)
 ```bash
-ollama run llama3.1:8b-instruct-q8_0
+ollama pull llama3.1:8b-instruct-q8_0
 ```
 ```bash
-/bye
-```
-```bash
-ollama run mxbai-embed-large
+ollama pull mxbai-embed-large
 ```
 
 ### Basic Customizing
@@ -62,5 +59,6 @@ To kickstart the chatbot, run this from the root folder:
 crewai run
 ```
 
-This command starts the telegram chatbot, which can then be accessed via telegram and used to start the multi-agent-RAG system.
+This command starts the telegram chatbot, which can then be accessed via telegram and used to start the multi-agent-RAG system.  
+To stop the running chatbot, use `Ctrl+C`.
 

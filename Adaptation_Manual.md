@@ -4,7 +4,7 @@ As one of the requirements of the project is that it can easily be adapted, here
 To adapt the multi-agent system to a new use case, the files `agents.yaml`, `tasks.yaml` and `crew.py` need to be changed.
 - Firstly, go to `agents.yaml` and replace the existing agents with the new ones, each including a role, a goal and a backstory.
 - Secondly, go to `tasks.yaml` and replace the existing tasks with new ones, at least one per agent. Each should include a description, an expected_output and an agent.
-- Thirdly, go to `crew.py` and change the functions that return either an agent or a task, like `researcher()`. Here, change the name of the function, the text of the logger message and the corresponding .yaml agent or task. This has to be done until all tasks are mentioned in the `crew.py`.  
+- Thirdly, go to `crew.py` and change the functions that return either an agent or a task, like `researcher()`. Here, change the name of the function, the text of the logger message and the corresponding YAML agent or task. This has to be done until all tasks are mentioned in the `crew.py`.  
   Remove all unnecessary agent and task functions.
 
 Now, the multi-agent system is adapted to your new use case!
@@ -57,14 +57,14 @@ To adapt the telegram chatbot to a new use case, the conversation needs to be ch
   - Line 2: Change the commented description to the new state
   - Line 7: Change the first word in the log message from `tone` to the new function name
   - Line 9: Change `tone` to the new state, e.g. `confidentiality`
-  - Line 10: Change the response to asking for the new state in the chosen order, in this case additional information.
+  - Line 10: Change the response to asking for the new state in the chosen order, e.g. additional information.
   - Line 12: Change the first word in the log message from `tone` to the new function name
-  - Line 13: Change `WEBSITE` to the new next state, in this case `ADDITIONAL` (information)
+  - Line 13: Change `WEBSITE` to the new next state, e.g.`ADDITIONAL` (information)
   - Line 15: Change the first word in the log message from `tone` to the new function name
   - Line 16: Change `tone` to the new state
-  - Line 17: Change the response to asking for the new state in the chosen order, in this case additional information.
+  - Line 17: Change the response to asking for the new state in the chosen order, e.g. additional information.
   - Line 19: Change the first word in the log message from `tone` to the new function name
-  - Line 20: Change `WEBSITE` to the new next state, in this case `ADDITIONAL` (information)
+  - Line 20: Change `WEBSITE` to the new next state, e.g. `ADDITIONAL` (information)
   - Line 23: Change `tone` to the new state
   - Line 24: Change the first word in the log message from `tone` to the new function name
   - Line 25: Change `TONE` to the new state, e.g. `CONFIDENTIALITY`
