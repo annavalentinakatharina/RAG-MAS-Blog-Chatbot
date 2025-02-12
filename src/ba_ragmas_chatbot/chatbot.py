@@ -1,15 +1,12 @@
 import os
 import shutil
-
-import chromadb
 import yaml
 
 from crewai_tools.tools import DOCXSearchTool, PDFSearchTool, TXTSearchTool, WebsiteSearchTool
-from telegram import ForceReply, Update, ReplyKeyboardMarkup
+from telegram import  Update
 from telegram.error import BadRequest
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters, CallbackContext, ConversationHandler
 from langchain_ollama import OllamaLLM
-
 from src.ba_ragmas_chatbot import logger_config
 from src.ba_ragmas_chatbot.crew import BaRagmasChatbot
 

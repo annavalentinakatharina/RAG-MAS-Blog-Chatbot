@@ -39,7 +39,7 @@ To adapt the RAG part to a new input type, a new tool adding function needs to b
 To now explain how to add a new input type in detail, let's copy the function `addWebsite(url)`, paste it to the end of the file and adapt it to `addCSV(csv)`, which can be used to add a `CSVSearchTool`.  
 Start by looking at the online documentation, and find out what additional input variable is necessary for this tool. In the case of `CSVSearchTool`, it is `csv='path/to/your/csvfile.csv`.  
 Now, change the following lines in the pasted function `addCSV(csv)`:
-- Line 1: Rename the function to `addCSV` and the `url` to `csv`.
+- Line 1: Rename the function to `addCSV` and change `url` to `csv`.
 - Line 3: Replace `WebsiteSearchTool` with `CSVSearchTool`.
 - Line 4: Replace `website` with `csv`, and `url` with `csv`.
 - Line 23: In the log message, replace `Website` with `CSV`, and `{url}` with `{csv}`.  

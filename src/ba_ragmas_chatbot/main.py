@@ -1,8 +1,8 @@
 import sys
 import warnings
 
-from ba_ragmas_chatbot.crew import BaRagmasChatbot
-from ba_ragmas_chatbot.chatbot import TelegramBot
+from ba_ragmas_chatbot.crew import BaRagmasChatbot #is always red underlined, but no real error
+from ba_ragmas_chatbot.chatbot import TelegramBot #is always red underlined, but no real error
 from telegram.error import NetworkError
 
 from src.ba_ragmas_chatbot import logger_config
@@ -16,7 +16,7 @@ warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 
 def run():
     """
-    Run the crew.
+    Run the telegram chatbot.
     """
     try:
         logger = logger_config.get_logger("main")

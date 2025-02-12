@@ -2,7 +2,7 @@ import os
 
 import yaml
 from crewai.tools import BaseTool
-from typing import Type, List, Optional, Tuple
+from typing import Type, Optional
 
 from pydantic import BaseModel, Field
 from duckduckgo_api_haystack import DuckduckgoApiWebSearch
@@ -30,7 +30,6 @@ class FactCheckTool(BaseTool):
 
     def fact_check_with_duckduckgo(self, fact: str) -> tuple[bool, str] | tuple[bool, None]:
         """Fact-check the statement using DuckDuckGo."""
-        verified = []
         search_result = self.search_duckduckgo(fact)
         if search_result is not None:
             return True, search_result
