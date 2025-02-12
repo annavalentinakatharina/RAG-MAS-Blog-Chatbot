@@ -45,7 +45,7 @@ Now, change the following lines in the pasted function `addCSV(csv)`:
 - Line 23: In the log message, replace `Website` with `CSV`, and `{url}` with `{csv}`.  
 
 Additionally, the function that receives the input also needs to be changed. To do this, go to the `VALID_MIME_TYPES` and add the new mime type.  
-Now, go to the function `document()`, and extend the match-case to your new mime type, with the new tool being added as a consequence.
+Now, go to the function `document()`, and extend the match-case to your new mime type, with the new tool being added as a case.
 
 
 ## Telegram Chatbot Adaptation

@@ -10,7 +10,7 @@ Prerequisites:
 - Python >=3.10 <=3.13
 - Pip and virtual environment support
 
-This project uses [UV](https://docs.astral.sh/uv/) for dependency management and package handling, but also offers a requirements.txt for .venv creation.
+This project uses [UV](https://docs.astral.sh/uv/) for dependency management and package handling, but also offers a requirements.txt for dependency installation.
 
 First, clone this git repository:
 
@@ -59,6 +59,6 @@ To kickstart the chatbot, run this from the root folder:
 crewai run
 ```
 
-This command starts the telegram chatbot, which can then be accessed via telegram and used to start the multi-agent-RAG system.  
-To stop the running chatbot, use `Ctrl+C`.
+This command starts the telegram chatbot, which can then be accessed via Telegram and used to start the multi-agent-RAG system.  
+To stop the running chatbot, use `Ctrl+C` in the CLI.
 
