@@ -4,7 +4,7 @@ research_task:
     Make sure you find any interesting and relevant information given
     the current year is 2025.
   expected_output: >
-    A list with 10 bullet points of the most relevant information about {topic}
+    A list with 10 bullet points of the most relevant information about {topic} in {language}
   agent: researcher
 
 editor_task:
@@ -19,7 +19,7 @@ editor_task:
     Extra Notes: {additional_information}
     Context History: {history}
   expected_output: >
-    A list of bullet points of the topic of each paragraph about {topic}
+    A list of bullet points of the topic of each paragraph about {topic} in {language}
   agent: editor
 
 writer_task:
@@ -34,7 +34,7 @@ writer_task:
     Extra Notes: {additional_information}
     Context History: {history}
   expected_output: >
-    A blog article about {topic}
+    A blog article about {topic} in {language}
   agent: writer
 
 proofreader_task:
@@ -49,5 +49,5 @@ proofreader_task:
     Extra Notes: {additional_information}
     Context History: {history}
   expected_output: >
-    The received blog article about {topic}
+    The received blog article about {topic} in {language}
   agent: proofreader

@@ -1,7 +1,7 @@
 # BaRagmasChatbot Crew
 
 Welcome to the BaRagmasChatbot bachelor thesis project! The goal of this project is to provide a local, open-source, multi-agent tool that can be easily adapted to a new use case. 
-For the Multi-Agent System and RAG, it uses the framework [crewAI](https://crewai.com) and as a user interface, the [python-telegram-bot](https://python-telegram-bot.org).
+For the Multi-Agent System and RAG, it uses the framework [crewAI](https://crewai.com) and as a user interface, the [python-telegram-bot](https://python-telegram-bot.org). As a base LLM, it uses an [Ollama model](https://ollama.com/library/llama3.1).
 
 ## Installation
 This is a tutorial for running it on a Mac. If you are using it on a Windows, please adjust the commands accordingly.  
@@ -30,10 +30,16 @@ Next, navigate to your project directory and install the dependencies:
 ```bash
 pip install -r requirements.txt
 ```
-Now, download the ollama cli tool and run it. After running serve, wait a few seconds and then press enter: 
+Now, download the ollama cli tool: 
 ```bash
 brew install ollama
 ```
+If you're using Linux, `brew` is not available. Alternatively use this command:
+```bash
+curl -fsSL https://ollama.com/install.sh | sh
+```
+A third alternative would be to download the tool via the Ollama website https://ollama.com/download.  
+Either way, the tool has to be started. After running serve, wait a few seconds and then press enter: 
 ```bash
 ollama serve &
 ```
@@ -47,7 +53,7 @@ ollama pull mxbai-embed-large
 
 ### Basic Customizing
 
-Add your telegram chatbot token into the `configs.yaml` file, replacing `{your_token}`.  
+Add your telegram chatbot token into the `src/config/configs.yaml` file, replacing `{your_token}`.  
 To receive your telegram chatbot token, you first need to register your chatbot using the BotFather-bot on telegram.  
 This also shows you where you can access your chatbot once it is running.
 

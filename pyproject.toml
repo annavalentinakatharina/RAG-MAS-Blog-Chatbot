@@ -2,7 +2,7 @@
 name = "ba_ragmas_chatbot"
 version = "0.1.0"
 description = "BA_RAGMAS_chatbot using crewAI"
-authors = [{ name = "Your Name", email = "you@example.com" }]
+authors = [{ name = "Anna Hansl", email = "anna.hansl@univie.ac.at" }]
 requires-python = ">=3.10,<=3.13"
 dependencies = [
     "crewai[tools]>=0.86.0,<1.0.0",
