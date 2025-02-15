@@ -1,8 +1,8 @@
 import sys
 import warnings
 
-from ba_ragmas_chatbot.crew import BaRagmasChatbot #is always red underlined, but no real error
-from ba_ragmas_chatbot.chatbot import TelegramBot #is always red underlined, but no real error
+from .crew import BaRagmasChatbot
+from .chatbot import TelegramBot
 from telegram.error import NetworkError
 
 from src.ba_ragmas_chatbot import logger_config

@@ -11,6 +11,7 @@ crewai-tools
 decorator
 docx2txt
 duckduckgo_search
+duckduckgo_api_haystack
 embedchain
 fastjsonschema
 filelock
