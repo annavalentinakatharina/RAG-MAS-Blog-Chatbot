@@ -1,15 +1,14 @@
 import os
 import shutil
-import yaml
 
 from crewai_tools.tools import DOCXSearchTool, PDFSearchTool, TXTSearchTool, WebsiteSearchTool
-from telegram import  Update
+from telegram import Update
 from telegram.error import BadRequest
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters, CallbackContext, ConversationHandler
 from langchain_ollama import OllamaLLM
 from src.ba_ragmas_chatbot import logger_config
 from src.ba_ragmas_chatbot.crew import BaRagmasChatbot
-
+from dotenv import load_dotenv
 
 class TelegramBot:
     CHAT, TOPIC, TASK, TOPIC_OR_TASK, WEBSITE, DOCUMENT, LENGTH, LANGUAGE_LEVEL, INFORMATION, LANGUAGE, TONE, CONFIRM, ADDITIONAL = range(13)
@@ -18,17 +17,14 @@ class TelegramBot:
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         "text/plain",
     ]
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    yaml_file = os.path.join(current_dir, "config", "configs.yaml")
-    with open(yaml_file, 'r') as file:
-        config = yaml.safe_load(file)
-    token = config['chatbot_token']['token']
-    llm_name = config['chatbot']['llm']['name']
-    llm_provider = config['chatbot']['llm']['provider_name']
-    llm_url = config['chatbot']['llm']['url']
-    embed_model_name = config['chatbot']['embedding_model']['name']
-    embed_model_provider = config['chatbot']['embedding_model']['provider_name']
-    embed_model_url = config['chatbot']['embedding_model']['url']
+    load_dotenv()
+    token = os.getenv("CHATBOT_TOKEN")
+    llm_name = os.getenv("MODEL_NAME")
+    llm_provider = os.getenv("MODEL_PROVIDER")
+    llm_url = os.getenv("API_BASE")
+    embed_model_name = os.getenv("EMBEDDING_MODEL")
+    embed_model_provider = os.getenv("EMBEDDING_MODEL_PROVIDER")
+    embed_model_url = os.getenv("API_BASE")
     tools = []
     ai = OllamaLLM(model=llm_name)
     logger = logger_config.get_logger('telegram bot')
@@ -39,7 +35,7 @@ class TelegramBot:
         db_folder = "./db"
         if os.path.exists(db_folder):
             shutil.rmtree(db_folder)
-            os.makedirs(db_folder)
+        os.makedirs(db_folder)
 
     async def chat(self, update: Update, context: CallbackContext):
         """Interaction with the second not-RAG-MAS llm when the blog article configuration is deactivated"""
@@ -71,8 +67,7 @@ class TelegramBot:
         try:
             context.user_data.clear()
             context.user_data['history'] = []
-            self.clear_db()
-            self.tools = []
+            self.tools.clear()
             self.logger.info(f"clear: Conversation successfully cleared.")
             await update.message.reply_text("Conversation successfully cleared! Your conversation was restarted, so please either restart your configuration or chat with the LLM!")
             return self.CHAT

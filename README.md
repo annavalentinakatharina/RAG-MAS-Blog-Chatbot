@@ -53,8 +53,8 @@ ollama pull mxbai-embed-large
 
 ### Basic Customizing
 
-Add your telegram chatbot token into the `src/config/configs.yaml` file, replacing `{your_token}`.  
-To receive your telegram chatbot token, you first need to register your chatbot using the BotFather-bot on telegram.  
+Add your telegram chatbot token into the `.env` file in the line `CHATBOT_TOKEN={your_token}`, replacing `{your_token}`.  
+To receive your telegram chatbot token, you first need to register your chatbot using the BotFather-bot on Telegram.  
 This also shows you where you can access your chatbot once it is running.
 
 ## Running the Project
@@ -66,5 +66,7 @@ crewai run
 ```
 
 This command starts the telegram chatbot, which can then be accessed via Telegram and used to start the multi-agent-RAG system.  
-To stop the running chatbot, use `Ctrl+C` in the CLI.
+To stop the running chatbot, use `Ctrl+C` in the CLI.  
+
+When using the chatbot, the bot is started when you first communicate with the chatbot, or, if you have already had a conversation with the bot, using the command `/start`.
 

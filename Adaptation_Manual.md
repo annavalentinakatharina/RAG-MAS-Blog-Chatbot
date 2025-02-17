@@ -16,23 +16,23 @@ Now, the multi-agent system is adapted to your new use case!
 ```bash
 ollama pull {new_model}
 ```
-- Next, go to `config.yaml`.  
-- Here, first go to the line `llm: ollama/llama3.1:8b-instruct-q8_0`. Here, replace `llama3.1:8b-instruct-q8_0` with your model of choice, e.g. `llama3.2`.  
-- Next, go to the line `name: llama3.1:8b-instruct-q8_0`. Here, again replace `llama3.1:8b-instruct-q8_0` with your model of choice, e.g. `llama3.2`.
+- Next, go to `.env`.  
+- Here, first go to the line `MODEL=ollama/llama3.1:8b-instruct-q8_0`. Here, replace `llama3.1:8b-instruct-q8_0` with your model of choice, e.g. `llama3.2`.  
+- Next, go to the line `MODEL_NAME=llama3.1:8b-instruct-q8_0`. Here, again replace `llama3.1:8b-instruct-q8_0` with your model of choice, e.g. `llama3.2`.
 #### Change the embedding model
 - First, download the new embedding model:
 ```bash
 ollama pull {new_model}
 ```
-- Next, go to the file `configs.yaml`.  
-- Go to the line `name: mxbai-embed-large`. Here, replace `mxbai-embed-large` with your embedding model of choice.  
+- Next, go to the file `.env`.  
+- Go to the line `EMBEDDING_MODEL=mxbai-embed-large`. Here, replace `mxbai-embed-large` with your embedding model of choice.  
 
 ### Change to a non-Ollama model
 
-- Firstly, change the same lines as when changing to a Ollama LLM, but also change the `provider` and remove the `url` attribute.  
+- Firstly, change the same lines as when changing to a Ollama LLM, but also change the `MODEL_PROVIDER`/`EMBEDDING_MODEL_PROVIDER` and remove the `API_BASE` attribute.  
 - Secondly, go to all the agents in `crew.py` and change the `llm` attribute, where the `base_url` needs to be removed.  
 - Thirdly, go to `chatbot.py`, and go to the functions `addWebsite()`, `addPDF()`, `addDOCX()` and `addTxt()`. Here, go to the most indented part, where the attributes `model` and `url` are situated, and remove the `url` attribute.  
-- Next, if an API key is necessary to access the model, go to the `.env` file in the root folder, and add `OPENAI_API_KEY={key}` as a third line and add your key instead of `{key}`.
+- Next, if an API key is necessary to access the model, go to the file `.env`, and add `OPENAI_API_KEY={key}` as a last line and add your key instead of `{key}`.
 
 ## RAG Adaptation
 To adapt the RAG part to a new input type, a new tool adding function needs to be implemented in the `chatbot.py`. To see all possible input types, please go to the Tools list on https://docs.crewai.com/introduction and decide on one.  

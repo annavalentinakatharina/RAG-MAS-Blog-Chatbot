@@ -4,7 +4,7 @@ research_task:
     Make sure you find any interesting and relevant information given
     the current year is 2025.
   expected_output: >
-    A list with 10 bullet points of the most relevant information about {topic} in {language}
+    A list with 10 bullet points of the most relevant information about {topic} completely in {language}
   agent: researcher
 
 editor_task:
@@ -19,7 +19,7 @@ editor_task:
     Extra Notes: {additional_information}
     Context History: {history}
   expected_output: >
-    A list of bullet points of the topic of each paragraph about {topic} in {language}
+    A list of bullet points of the topic of each paragraph about {topic} completely in {language}
   agent: editor
 
 writer_task:
@@ -34,13 +34,14 @@ writer_task:
     Extra Notes: {additional_information}
     Context History: {history}
   expected_output: >
-    A blog article about {topic} in {language}
+    A blog article about {topic} completely in {language}
   agent: writer
 
 proofreader_task:
   description: >
     Proofread and factcheck the received blog article about {topic}.
-    If a numerical fact is mentioned, check it with the tool.
+    If a fact is mentioned, check it with the tool.
+    If the language of the article is not {language}, translate it to {language}.
     Word Count Target: {length}
     Information Depth: {information_level}
     Reader Skill Level: {language_level}
@@ -49,5 +50,5 @@ proofreader_task:
     Extra Notes: {additional_information}
     Context History: {history}
   expected_output: >
-    The received blog article about {topic} in {language}
+    The received blog article about completely {topic} in {language}
   agent: proofreader

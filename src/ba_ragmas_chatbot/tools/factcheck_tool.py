@@ -1,12 +1,12 @@
 import os
 
-import yaml
 from crewai.tools import BaseTool
 from typing import Type, Optional
 
 from pydantic import BaseModel, Field
 from duckduckgo_api_haystack import DuckduckgoApiWebSearch
 import ollama
+from dotenv import load_dotenv
 
 class FactCheckToolInput(BaseModel):
     """Input schema for FactCheckTool."""
@@ -15,18 +15,16 @@ class FactCheckToolInput(BaseModel):
 class FactCheckTool(BaseTool):
     name: str = "fact_check_tool"
     description: str = (
-        "This tool allows agents to verify a numerical fact and returns if it is true or false."
+        "This tool allows agents to verify a fact and returns if it is true or false."
     )
     args_schema: Type[BaseModel] = FactCheckToolInput
 
     def _run(self, argument: str) -> str:
-        if any(char.isdigit() for char in argument):
-            is_true, source = self.fact_check_with_duckduckgo(argument)
-            if is_true:
-                return str(True)
-            else:
-                return str(False)
-        return str(True)
+        is_true, source = self.fact_check_with_duckduckgo(argument)
+        if is_true:
+            return str(True)
+        else:
+            return str(False)
 
     def fact_check_with_duckduckgo(self, fact: str) -> tuple[bool, str] | tuple[bool, None]:
         """Fact-check the statement using DuckDuckGo."""
@@ -57,10 +55,5 @@ class FactCheckTool(BaseTool):
         return None
 
     def get_llm(self) -> str:
-        base_dir =  os.path.dirname(__file__)
-        root_dir = os.path.dirname(base_dir)
-        yaml_file = os.path.join(root_dir, "config", "configs.yaml")
-        with open(yaml_file, 'r') as file:
-            config = yaml.safe_load(file)
-        llm_name = config['chatbot']['llm']['name']
-        return llm_name
+        load_dotenv()
+        return os.getenv("MODEL_NAME")
