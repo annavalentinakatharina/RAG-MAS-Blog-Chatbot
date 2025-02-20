@@ -1,20 +1,24 @@
 import os
+import yaml
 
 from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task, before_kickoff, after_kickoff
 
 from src.ba_ragmas_chatbot import logger_config
 from src.ba_ragmas_chatbot.tools.factcheck_tool import FactCheckTool
-from dotenv import load_dotenv
+
 
 @CrewBase
 class BaRagmasChatbot():
 	"""BaRagmasChatbot crew"""
 	agents_config = 'config/agents.yaml'
 	tasks_config = 'config/tasks.yaml'
-	load_dotenv()
-	llm = os.getenv("MODEL")
-	url = os.getenv("API_BASE")
+	current_dir = os.path.dirname(os.path.abspath(__file__))
+	yaml_file = os.path.join(current_dir, "config", "configs.yaml")
+	with open(yaml_file, 'r') as file:
+		config = yaml.safe_load(file)
+	llm = config['agents']['llm']
+	url = config['agents']['url']
 
 	def __init__(self, tools):
 		self.tools = tools

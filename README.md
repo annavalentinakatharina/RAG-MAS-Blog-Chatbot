@@ -53,7 +53,7 @@ ollama pull mxbai-embed-large
 
 ### Basic Customizing
 
-Add your telegram chatbot token into the `.env` file in the line `CHATBOT_TOKEN={your_token}`, replacing `{your_token}`.  
+Add your telegram chatbot token into the `src/ba_ragmas_chatbot/config/configs.yaml` file in line 2, `token={your_token}`, replacing `{your_token}`.  
 To receive your telegram chatbot token, you first need to register your chatbot using the BotFather-bot on Telegram.  
 This also shows you where you can access your chatbot once it is running.
 

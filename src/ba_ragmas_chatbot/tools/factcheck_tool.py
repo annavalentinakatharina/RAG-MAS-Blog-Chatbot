@@ -1,12 +1,12 @@
 import os
+import yaml
+import ollama
 
 from crewai.tools import BaseTool
 from typing import Type, Optional
 
 from pydantic import BaseModel, Field
 from duckduckgo_api_haystack import DuckduckgoApiWebSearch
-import ollama
-from dotenv import load_dotenv
 
 class FactCheckToolInput(BaseModel):
     """Input schema for FactCheckTool."""
@@ -55,5 +55,10 @@ class FactCheckTool(BaseTool):
         return None
 
     def get_llm(self) -> str:
-        load_dotenv()
-        return os.getenv("MODEL_NAME")
+        base_dir = os.path.dirname(__file__)
+        root_dir = os.path.dirname(base_dir)
+        yaml_file = os.path.join(root_dir, "config", "configs.yaml")
+        with open(yaml_file, 'r') as file:
+            config = yaml.safe_load(file)
+        llm_name = config['chatbot']['llm']['name']
+        return llm_name

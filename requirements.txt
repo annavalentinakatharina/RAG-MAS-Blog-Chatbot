@@ -1,13 +1,13 @@
-crewai
+crewai~=0.86.0
 crewai_tools
 duckduckgo_api_haystack
 httpcore
 httpx<0.28.0 #Needed for Ollama & LiteLLM
 langchain_ollama
-ollama
-pydantic
-python-telegram-bot
-typing
-python-dotenv
-telegram
-pytest
+ollama~=0.4.4
+pydantic~=2.10.3
+python-telegram-bot~=21.9
+typing~=3.7.4.3
+telegram~=0.0.1
+pytest~=8.3.4
+PyYAML~=6.0.2

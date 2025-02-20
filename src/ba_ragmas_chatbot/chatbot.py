@@ -1,5 +1,6 @@
 import os
 import shutil
+import yaml
 
 from crewai_tools.tools import DOCXSearchTool, PDFSearchTool, TXTSearchTool, WebsiteSearchTool
 from telegram import Update
@@ -8,7 +9,7 @@ from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandl
 from langchain_ollama import OllamaLLM
 from src.ba_ragmas_chatbot import logger_config
 from src.ba_ragmas_chatbot.crew import BaRagmasChatbot
-from dotenv import load_dotenv
+
 
 class TelegramBot:
     CHAT, TOPIC, TASK, TOPIC_OR_TASK, WEBSITE, DOCUMENT, LENGTH, LANGUAGE_LEVEL, INFORMATION, LANGUAGE, TONE, CONFIRM, ADDITIONAL = range(13)
@@ -17,14 +18,18 @@ class TelegramBot:
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         "text/plain",
     ]
-    load_dotenv()
-    token = os.getenv("CHATBOT_TOKEN")
-    llm_name = os.getenv("MODEL_NAME")
-    llm_provider = os.getenv("MODEL_PROVIDER")
-    llm_url = os.getenv("API_BASE")
-    embed_model_name = os.getenv("EMBEDDING_MODEL")
-    embed_model_provider = os.getenv("EMBEDDING_MODEL_PROVIDER")
-    embed_model_url = os.getenv("API_BASE")
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    yaml_file = os.path.join(current_dir, "config", "configs.yaml")
+    with open(yaml_file, 'r') as file:
+        config = yaml.safe_load(file)
+    token = config['chatbot_token']['token']
+    llm_name = config['chatbot']['llm']['name']
+    llm_provider = config['chatbot']['llm']['provider_name']
+    llm_url = config['chatbot']['llm']['url']
+    embed_model_name = config['chatbot']['embedding_model']['name']
+    embed_model_provider = config['chatbot']['embedding_model']['provider_name']
+    embed_model_url = config['chatbot']['embedding_model']['url']
+
     tools = []
     ai = OllamaLLM(model=llm_name)
     logger = logger_config.get_logger('telegram bot')
