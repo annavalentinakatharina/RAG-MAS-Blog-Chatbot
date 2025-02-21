@@ -65,8 +65,9 @@ To kickstart the chatbot, run this from the root folder:
 crewai run
 ```
 
-This command starts the telegram chatbot, which can then be accessed via Telegram and used to start the multi-agent-RAG system.  
+This command starts the telegram chatbot, which can then be accessed via Telegram and used to start the multi-agent-RAG system.   
+When using the chatbot, the bot is started when you first communicate with the chatbot, or, if you have already had a conversation with the bot, using the command `/start`.  
+
 To stop the running chatbot, use `Ctrl+C` in the CLI.  
 
-When using the chatbot, the bot is started when you first communicate with the chatbot, or, if you have already had a conversation with the bot, using the command `/start`.
 
